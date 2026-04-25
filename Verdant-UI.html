@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verdant — UI Guide Supplement</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
+
+:root {
+  --g: #34C759;
+  --g-dk: #1A3A22;
+  --g-lt: #D1F0D9;
+  --g-mid: #248A3D;
+  --blue: #007AFF;
+  --red: #FF3B30;
+  --amber: #FF9500;
+  --purple: #AF52DE;
+  --bg: #F5F5F0;
+  --white: #FFFFFF;
+  --ink: #0A0A0A;
+  --ink2: #444;
+  --ink3: #888;
+  --sep: rgba(0,0,0,0.10);
+  --mono: 'DM Mono', monospace;
+  --sans: 'DM Sans', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 13px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+.page {
+  width: 1200px;
+  margin: 0 auto;
+  padding: 40px 48px 80px;
+}
+
+/* ── Doc header (replaces decorative cover) ── */
+.doc-header {
+  border-bottom: 2px solid var(--g-dk);
+  padding-bottom: 20px;
+  margin-bottom: 48px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+}
+.doc-title {
+  font-size: 34px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--g-dk);
+  margin-bottom: 4px;
+}
+.doc-sub { font-size: 13px; color: var(--ink2); margin-bottom: 10px; }
+.doc-meta {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink3);
+  text-align: right;
+  line-height: 1.9;
+}
+.doc-sections { display: flex; gap: 8px; flex-wrap: wrap; }
+.doc-section-tag {
+  background: var(--g-lt);
+  color: var(--g-dk);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 4px 12px;
+  border-radius: 50px;
+  font-family: var(--mono);
+}
+
+/* ── Section structure ── */
+.section { margin-bottom: 56px; }
+
+.divider {
+  border: none;
+  border-top: 1px solid var(--sep);
+  margin: 40px 0;
+}
+
+/* ── Section header ── */
+.sec-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+.sec-badge {
+  width: 28px; height: 28px;
+  background: var(--g-dk); color: #fff;
+  border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; flex-shrink: 0;
+  font-family: var(--mono);
+}
+.sec-title {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+}
+.sec-sub {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--ink3);
+  margin-left: auto;
+}
+.sec-desc {
+  font-size: 17px;
+  font-weight: 400;
+  color: var(--ink2);
+  max-width: 760px;
+  line-height: 1.6;
+  margin-bottom: 24px;
+  padding-left: 40px;
+}
+
+/* ── Grids ── */
+.two-col   { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.four-col  { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 14px; }
+
+/* ── Spec card ── */
+.spec-card {
+  background: var(--white);
+  border-radius: 16px;
+  padding: 20px;
+  border: 1px solid var(--sep);
+}
+.spec-card-title {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+  margin-bottom: 2px;
+  color: var(--ink);
+}
+.spec-card-sub {
+  font-size: 13px;
+  color: var(--ink3);
+  font-family: var(--mono);
+  margin-bottom: 14px;
+}
+.spec-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  gap: 16px;
+}
+.spec-row:last-child { border-bottom: none; }
+.spec-key { font-size: 12px; color: var(--ink3); }
+.spec-val { font-family: var(--mono); font-size: 12px; color: var(--ink); font-weight: 500; }
+
+/* ── Screen mockup ── */
+.mockup-wrap {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+.mockup-col { flex: 1; }
+.mockup-label {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: var(--ink3);
+  margin-bottom: 10px;
+}
+.phone-shell {
+  background: var(--g-dk);
+  border-radius: 36px;
+  padding: 10px;
+  width: 196px;
+  box-shadow: 0 20px 60px rgba(26,58,34,0.25), 0 4px 12px rgba(0,0,0,0.15);
+}
+.phone-screen {
+  background: var(--white);
+  border-radius: 28px;
+  overflow: hidden;
+  position: relative;
+}
+.phone-status {
+  background: var(--white);
+  padding: 10px 16px 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.phone-time { font-size: 15px; font-weight: 600; }
+.phone-icons { font-size: 10px; color: var(--ink3); }
+.phone-nav {
+  padding: 4px 14px 8px;
+  border-bottom: 0.5px solid var(--sep);
+}
+.phone-nav-title { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
+.phone-nav-sub { font-size: 12px; font-weight: 400; color: var(--ink3); }
+.phone-content { padding: 10px 10px 0; }
+.phone-tab-bar {
+  border-top: 0.5px solid var(--sep);
+  display: flex;
+  padding: 6px 0 10px;
+  background: rgba(249,249,249,0.94);
+}
+.phone-tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  font-size: 10px;
+  color: var(--ink3);
+  cursor: default;
+}
+.phone-tab.active { color: var(--g); }
+.phone-tab-icon { font-size: 16px; }
+
+/* ── Mini card components ── */
+.mini-rem {
+  background: var(--white);
+  border-radius: 10px;
+  padding: 10px;
+  border: 1px solid var(--sep);
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.mini-rem-icon {
+  width: 28px; height: 28px;
+  border-radius: 7px;
+  background: rgba(0,122,255,0.10);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; flex-shrink: 0;
+}
+.mini-rem-body { flex: 1; }
+.mini-rem-name { font-size: 15px; font-weight: 600; }
+.mini-rem-desc { font-size: 12px; color: var(--ink3); }
+.mini-rem-badge {
+  font-size: 11px; font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 50px;
+}
+.urg-now  { background: rgba(255,59,48,0.10); color: var(--red); }
+.urg-soon { background: rgba(255,149,0,0.10); color: var(--amber); }
+.urg-ok   { background: rgba(52,199,89,0.10); color: var(--g-dk); }
+
+.mini-progress { height: 3px; background: #eee; border-radius: 2px; margin-top: 4px; overflow: hidden; }
+.mini-progress-fill { height: 100%; border-radius: 2px; }
+
+/* ── Annotation callout ── */
+.annotation-block {
+  background: var(--g-dk);
+  color: #fff;
+  border-radius: 14px;
+  padding: 18px 20px;
+  margin-bottom: 12px;
+}
+.annotation-block .label {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: var(--g);
+  margin-bottom: 5px;
+}
+.annotation-block .body { font-size: 16px; font-weight: 400; color: rgba(255,255,255,0.80); line-height: 1.6; }
+
+/* ── Flow diagram ── */
+.flow {
+  display: flex;
+  align-items: center;
+  background: var(--white);
+  border-radius: 16px;
+  padding: 24px;
+  border: 1px solid var(--sep);
+  overflow-x: auto;
+}
+.flow-node {
+  flex-shrink: 0;
+  text-align: center;
+  min-width: 90px;
+}
+.flow-node-circle {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  margin: 0 auto 8px;
+  border: 1.5px solid var(--sep);
+  background: var(--bg);
+}
+.flow-node-circle.active {
+  background: var(--g-dk);
+  border-color: var(--g-dk);
+}
+.flow-node-label { font-size: 12px; font-weight: 600; color: var(--ink); }
+.flow-node-sub { font-size: 11px; color: var(--ink3); margin-top: 2px; }
+.flow-arrow {
+  flex: 1;
+  height: 1.5px;
+  background: var(--sep);
+  position: relative;
+  flex-shrink: 0;
+  min-width: 20px;
+}
+.flow-arrow::after {
+  content: '›';
+  position: absolute;
+  right: -5px;
+  top: -8px;
+  color: var(--ink3);
+  font-size: 14px;
+}
+
+/* ── Schema block ── */
+.schema-block {
+  background: #0E1E14;
+  border-radius: 14px;
+  padding: 20px 24px;
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 1.8;
+  color: #B5D9C0;
+  overflow-x: auto;
+}
+.schema-key   { color: #81D9A0; }
+.schema-type  { color: #7FB8E0; }
+.schema-note  { color: #5D7A65; }
+.schema-mode  { color: #F0A882; }
+.schema-req   { color: #F5D03A; }
+
+/* ── State matrix ── */
+.state-matrix { background: var(--white); border-radius: 16px; border: 1px solid var(--sep); overflow: hidden; }
+.state-matrix table { width: 100%; border-collapse: collapse; }
+.state-matrix th {
+  background: #F7F7F5;
+  font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.06em;
+  padding: 10px 16px; text-align: left;
+  color: var(--ink3); border-bottom: 1px solid var(--sep);
+}
+.state-matrix td {
+  font-size: 13px; padding: 10px 16px;
+  border-bottom: 0.5px solid var(--sep);
+  vertical-align: middle;
+}
+.state-matrix tr:last-child td { border-bottom: none; }
+.td-key { font-family: var(--mono); font-weight: 500; }
+.td-pill {
+  display: inline-block; font-size: 11px; font-weight: 600;
+  padding: 3px 10px; border-radius: 50px;
+  text-transform: uppercase; letter-spacing: 0.04em;
+}
+.pill-green  { background: var(--g-lt); color: var(--g-dk); }
+.pill-blue   { background: rgba(0,122,255,0.10); color: var(--blue); }
+.pill-amber  { background: rgba(255,149,0,0.10); color: #B86800; }
+.pill-red    { background: rgba(255,59,48,0.10); color: var(--red); }
+.pill-gray   { background: rgba(0,0,0,0.06); color: var(--ink3); }
+
+/* ── Highlight inline ── */
+.hl { background: var(--g-lt); color: var(--g-dk); padding: 1px 6px; border-radius: 4px; font-family: var(--mono); font-size: 11px; font-weight: 500; }
+
+/* ── Wide card ── */
+.wide-card {
+  background: var(--white);
+  border-radius: 16px;
+  padding: 24px;
+  border: 1px solid var(--sep);
+  margin-bottom: 16px;
+}
+.wide-card-title { font-size: 20px; font-weight: 600; margin-bottom: 16px; letter-spacing: -0.3px; }
+
+/* page-num-band aliased to sec-header */
+.page-num-band { display:flex; align-items:center; gap:12px; margin-bottom:20px; }
+.page-num-badge { width:28px;height:28px;background:var(--g-dk);color:#fff;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;font-family:var(--mono); }
+.page-num-text { font-size:28px;font-weight:700;color:var(--ink);letter-spacing:-0.3px; }
+.page-num-desc { font-size:13px;color:var(--ink3);margin-left:auto;font-family:var(--mono); }
+
+/* ── Viewfinder mini ── */
+.vf-mini {
+  background: #111; border-radius: 10px; height: 90px;
+  display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden; margin-bottom: 8px;
+}
+.vf-frame-mini { width: 60px; height: 60px; position: relative; }
+.vf-c { position: absolute; width: 10px; height: 10px; border-color: #fff; border-style: solid; border-width: 0; }
+.vf-c.tl { top:0;left:0;border-top-width:2px;border-left-width:2px;border-radius:2px 0 0 0; }
+.vf-c.tr { top:0;right:0;border-top-width:2px;border-right-width:2px;border-radius:0 2px 0 0; }
+.vf-c.bl { bottom:0;left:0;border-bottom-width:2px;border-left-width:2px;border-radius:0 0 0 2px; }
+.vf-c.br { bottom:0;right:0;border-bottom-width:2px;border-right-width:2px;border-radius:0 0 2px 0; }
+.vf-scanline {
+  position: absolute; left: 0; right: 0; height: 1.5px;
+  background: linear-gradient(90deg, transparent, var(--g), transparent);
+  animation: scan 2s ease-in-out infinite;
+}
+@keyframes scan { 0%{top:0}50%{top:58px}100%{top:0} }
+
+@media print {
+  .page { width: 100%; padding: 20px; }
+  .phone-shell { box-shadow: none; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ══ DOC HEADER ══ -->
+  <div class="doc-header">
+    <div>
+      <div class="doc-title">Verdant Plant Care App — UI Guide Supplement</div>
+      <div class="doc-sub">Feature-level UI specs, interaction states, AI integration, data schemas, and mode logic · Sections 01–05</div>
+      <div class="doc-sections">
+        <span class="doc-section-tag">01 Discover</span>
+        <span class="doc-section-tag">02 Reminders</span>
+        <span class="doc-section-tag">03 Detail Sheet</span>
+        <span class="doc-section-tag">04 AI &amp; Data</span>
+        <span class="doc-section-tag">05 Settings</span>
+      </div>
+    </div>
+    <div class="doc-meta">Amaya Whitted · UI / Instructional Design<br>iOS HIG · AI Integration · 3D · Supplement · 2026</div>
+  </div>
+
+
+  <!-- ══ 01 · DISCOVER TAB ══ -->
+  <div class="section">
+    <div class="page-num-band">
+      <div class="page-num-badge">01</div>
+      <div class="page-num-text">Discover Tab — AI Plant Identifier</div>
+      <div class="page-num-desc">Default state · AI result state · Quick-add grid</div>
+    </div>
+    <div class="sec-desc" style="padding-left:44px;margin-top:4px;">Two entry points for adding plants: (1) text-based AI identification via Claude API, (2) direct quick-add from a curated popular-plants grid. The viewfinder hero reserves space for a future camera integration without blocking the current flow.</div>
+
+    <div class="mockup-wrap" style="gap:28px; align-items:flex-start; margin-bottom:32px;">
+
+      <!-- Phone: Default state -->
+      <div class="mockup-col" style="max-width:220px;">
+        <div class="mockup-label">State 1 — Default / Scanner</div>
+        <div class="phone-shell">
+          <div class="phone-screen">
+            <div class="phone-status"><span class="phone-time">9:41</span><span class="phone-icons">●●● 📶 🔋</span></div>
+            <div class="phone-nav">
+              <div class="phone-nav-title">Discover</div>
+              <div class="phone-nav-sub">Find &amp; identify plants</div>
+            </div>
+            <div class="phone-content">
+              <div class="vf-mini">
+                <div class="vf-frame-mini">
+                  <div class="vf-c tl"></div><div class="vf-c tr"></div>
+                  <div class="vf-c bl"></div><div class="vf-c br"></div>
+                  <div class="vf-scanline"></div>
+                </div>
+              </div>
+              <div style="background:#eee;border-radius:8px;height:32px;margin-bottom:6px;display:flex;align-items:center;padding:0 10px;gap:6px;">
+                <span style="font-size:9px;color:#999;">🔍 Identify Plant</span>
+                <span style="margin-left:auto;background:#34C759;color:#fff;font-size:8px;font-weight:600;padding:3px 8px;border-radius:4px;">Go</span>
+              </div>
+              <div style="font-size:9px;font-weight:600;margin:6px 0 4px;letter-spacing:-0.1px;">Popular Plants</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;padding-bottom:8px;">
+                <div style="background:#fff;border-radius:8px;padding:7px;font-size:8px;">🌿<br><b style="font-size:9px;">Monstera</b><br><span style="color:#888;">Tropical</span></div>
+                <div style="background:#fff;border-radius:8px;padding:7px;font-size:8px;">🐍<br><b style="font-size:9px;">Snake Plant</b><br><span style="color:#888;">Easy care</span></div>
+                <div style="background:#fff;border-radius:8px;padding:7px;font-size:8px;">🌵<br><b style="font-size:9px;">Cactus</b><br><span style="color:#888;">Desert</span></div>
+                <div style="background:#fff;border-radius:8px;padding:7px;font-size:8px;">🌿<br><b style="font-size:9px;">Pothos</b><br><span style="color:#888;">Trailing</span></div>
+              </div>
+            </div>
+            <div class="phone-tab-bar">
+              <div class="phone-tab"><div class="phone-tab-icon">🌱</div>Plants</div>
+              <div class="phone-tab"><div class="phone-tab-icon">💧</div>Remind</div>
+              <div class="phone-tab active"><div class="phone-tab-icon">🔍</div>Discover</div>
+              <div class="phone-tab"><div class="phone-tab-icon">⚙️</div>Settings</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phone: AI result state -->
+      <div class="mockup-col" style="max-width:220px;">
+        <div class="mockup-label">State 2 — AI Identification Result</div>
+        <div class="phone-shell">
+          <div class="phone-screen">
+            <div class="phone-status"><span class="phone-time">9:41</span><span class="phone-icons">●●● 📶 🔋</span></div>
+            <div class="phone-nav"><div class="phone-nav-title">Discover</div></div>
+            <div class="phone-content">
+              <div class="vf-mini" style="height:60px;">
+                <div class="vf-frame-mini" style="width:40px;height:40px;">
+                  <div class="vf-c tl"></div><div class="vf-c tr"></div>
+                  <div class="vf-c bl"></div><div class="vf-c br"></div>
+                </div>
+              </div>
+              <div style="background:#fff;border-radius:12px;border:1.5px solid #34C759;padding:10px;margin:6px 0;">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+                  <div style="width:36px;height:36px;background:#D1F0D9;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🌿</div>
+                  <div style="flex:1;min-width:0;">
+                    <div style="font-size:11px;font-weight:700;">Monstera</div>
+                    <div style="font-size:8px;color:#888;font-style:italic;">M. deliciosa</div>
+                  </div>
+                  <div style="background:#D1F0D9;color:#1A3A22;font-size:7px;font-weight:700;padding:2px 7px;border-radius:50px;white-space:nowrap;flex-shrink:0;">AI 🔍</div>
+                </div>
+                <div style="font-size:8px;color:#555;line-height:1.4;background:#F5F5F0;border-radius:6px;padding:6px;margin-bottom:6px;">Tropical foliage plant with iconic fenestrated leaves…</div>
+                <div style="background:#34C759;color:#fff;text-align:center;font-size:9px;font-weight:700;padding:5px;border-radius:7px;">+ Add to My Plants</div>
+              </div>
+              <div style="font-size:9px;font-weight:600;margin:4px 0 4px;letter-spacing:-0.1px;">Popular Plants</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;padding-bottom:8px;">
+                <div style="background:#fff;border-radius:8px;padding:7px;font-size:8px;">🌵<br><b style="font-size:9px;">Cactus</b><br><span style="color:#888;">Desert</span></div>
+                <div style="background:#fff;border-radius:8px;padding:7px;font-size:8px;">🌱<br><b style="font-size:9px;">Peace Lily</b><br><span style="color:#888;">Flowering</span></div>
+              </div>
+            </div>
+            <div class="phone-tab-bar">
+              <div class="phone-tab"><div class="phone-tab-icon">🌱</div>Plants</div>
+              <div class="phone-tab"><div class="phone-tab-icon">💧</div>Remind</div>
+              <div class="phone-tab active"><div class="phone-tab-icon">🔍</div>Discover</div>
+              <div class="phone-tab"><div class="phone-tab-icon">⚙️</div>Settings</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Annotation specs -->
+      <div style="flex:1;display:flex;flex-direction:column;gap:10px;padding-top:32px;">
+        <div class="annotation-block">
+          <div class="label">Viewfinder Hero — Scanner Placeholder</div>
+          <div class="body">260pt tall · black fill · corner brackets 28×28pt, white 3pt stroke · animated scan-line: <span class="hl">2s ease-in-out infinite</span> · scan-line color: <span class="hl">gradient → #34C759 → transparent</span>. Collapses to 60pt height in result state.</div>
+        </div>
+        <div class="annotation-block">
+          <div class="label">Identify Input Row — Primary Action</div>
+          <div class="body">52pt height · text input + "Go" button inline · Scanning state: input disabled, background switches to <span class="hl">var(--fill2)</span>. Secondary alt-button (52×52pt, plus icon) opens Add Sheet for manual entry.</div>
+        </div>
+        <div class="annotation-block">
+          <div class="label">AI Result Card — Post-Identification State</div>
+          <div class="body">Border: <span class="hl">1.5px solid #34C759</span> · emoji tile 56pt · scientific name italic below common name · "AI Identified" confidence pill: <span class="hl">g-lt bg / g-dk text</span> · "Add to My Plants" CTA spans full width, 44pt height.</div>
+        </div>
+        <div class="annotation-block">
+          <div class="label">Popular Plants Grid — Quick-Add Path</div>
+          <div class="body">2-col grid · 10pt gap · Each card: 14pt padding, 28pt emoji, bold name, muted category tag. Tapping triggers <span class="hl">addPlantDirect()</span> then switches to Plants tab. No confirmation required.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Component specs -->
+    <div class="two-col">
+      <div class="spec-card">
+        <div class="spec-card-title">Scanner Hero</div>
+        <div class="spec-card-sub">Viewfinder + controls block</div>
+        <div class="spec-row"><span class="spec-key">Viewfinder height</span><span class="spec-val">260pt (default) / 60pt (result)</span></div>
+        <div class="spec-row"><span class="spec-key">Background</span><span class="spec-val">#000000</span></div>
+        <div class="spec-row"><span class="spec-key">Frame size</span><span class="spec-val">200×200pt</span></div>
+        <div class="spec-row"><span class="spec-key">Corner bracket</span><span class="spec-val">28×28pt · stroke 3pt · #fff</span></div>
+        <div class="spec-row"><span class="spec-key">Scan-line animation</span><span class="spec-val">2s ease-in-out infinite</span></div>
+        <div class="spec-row"><span class="spec-key">Scan-line color</span><span class="spec-val">gradient → #34C759 → transparent</span></div>
+        <div class="spec-row"><span class="spec-key">Container radius</span><span class="spec-val">20pt (--r-xl)</span></div>
+      </div>
+      <div class="spec-card">
+        <div class="spec-card-title">Result Card &amp; Quick-Add Cards</div>
+        <div class="spec-card-sub">Post-identification state</div>
+        <div class="spec-row"><span class="spec-key">Result border</span><span class="spec-val">1.5px solid #34C759</span></div>
+        <div class="spec-row"><span class="spec-key">Emoji tile</span><span class="spec-val">56×56pt · radius 14pt</span></div>
+        <div class="spec-row"><span class="spec-key">Confidence badge</span><span class="spec-val">g-lt bg · g-dk text · pill</span></div>
+        <div class="spec-row"><span class="spec-key">Add button height</span><span class="spec-val">44pt · full width</span></div>
+        <div class="spec-row"><span class="spec-key">Popular grid cols</span><span class="spec-val">2 · gap 10pt</span></div>
+        <div class="spec-row"><span class="spec-key">Quick-add behavior</span><span class="spec-val">addPlantDirect() → switchTab()</span></div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+
+  <!-- ══ 02 · REMINDERS TAB ══ -->
+  <div class="section">
+    <div class="page-num-band">
+      <div class="page-num-badge">02</div>
+      <div class="page-num-text">Reminders Tab — Care Scheduling</div>
+      <div class="page-num-desc">3 urgency states · Progress bar logic · AI tip flow</div>
+    </div>
+    <div class="sec-desc" style="padding-left:44px;margin-top:4px;">Cards sort by urgency ratio (elapsed days ÷ watering frequency). Each card shows a color-coded progress bar, urgency badge, and two actions: "Log Watered" and "Details." A Care Suggestions section surfaces an on-demand AI tip via Claude API. The tab badge reflects total plants requiring attention.</div>
+
+    <div class="mockup-wrap" style="gap:28px;margin-bottom:32px;">
+
+      <div class="mockup-col" style="max-width:220px;">
+        <div class="mockup-label">Reminders List — All 3 States</div>
+        <div class="phone-shell">
+          <div class="phone-screen">
+            <div class="phone-status"><span class="phone-time">9:41</span><span class="phone-icons">●●● 📶 🔋</span></div>
+            <div class="phone-nav" style="display:flex;justify-content:space-between;align-items:flex-end;">
+              <div><div class="phone-nav-title">Reminders</div><div class="phone-nav-sub">Upcoming care tasks</div></div>
+            </div>
+            <div class="phone-content">
+              <div style="font-size:8px;color:#888;text-transform:uppercase;letter-spacing:0.08em;padding:8px 0 4px;">💧 Watering Schedule</div>
+
+              <!-- Overdue -->
+              <div class="mini-rem" style="flex-direction:column;align-items:stretch;gap:5px;">
+                <div style="display:flex;align-items:center;gap:6px;">
+                  <div class="mini-rem-icon" style="flex-shrink:0;">💧</div>
+                  <div class="mini-rem-body" style="min-width:0;flex:1;"><div class="mini-rem-name">Monstera</div><div class="mini-rem-desc">Every 7 days</div></div>
+                  <div class="mini-rem-badge urg-now" style="white-space:nowrap;flex-shrink:0;padding:3px 8px;font-size:7.5px;line-height:1.3;">Water Now</div>
+                </div>
+                <div style="font-size:8px;color:#555;">Last watered 8 days ago</div>
+                <div class="mini-progress"><div class="mini-progress-fill" style="width:100%;background:var(--red)"></div></div>
+                <div style="display:flex;gap:4px;margin-top:2px;">
+                  <div style="flex:1;height:22px;background:#34C759;border-radius:50px;display:flex;align-items:center;justify-content:center;font-size:8px;color:#fff;font-weight:700;">Log Watered</div>
+                  <div style="flex:1;height:22px;background:#eee;border-radius:50px;display:flex;align-items:center;justify-content:center;font-size:8px;color:#333;">Details</div>
+                </div>
+              </div>
+
+              <!-- Due soon -->
+              <div class="mini-rem" style="flex-direction:column;align-items:stretch;gap:5px;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div class="mini-rem-icon">💧</div>
+                  <div class="mini-rem-body"><div class="mini-rem-name">Snake Plant</div><div class="mini-rem-desc">Every 14 days</div></div>
+                  <div class="mini-rem-badge urg-soon">Soon</div>
+                </div>
+                <div style="font-size:8px;color:#555;">Last watered 12 days ago</div>
+                <div class="mini-progress"><div class="mini-progress-fill" style="width:85%;background:var(--amber)"></div></div>
+                <div style="display:flex;gap:4px;margin-top:2px;">
+                  <div style="flex:1;height:22px;background:#34C759;border-radius:50px;display:flex;align-items:center;justify-content:center;font-size:8px;color:#fff;font-weight:700;">Log Watered</div>
+                  <div style="flex:1;height:22px;background:#eee;border-radius:50px;display:flex;align-items:center;justify-content:center;font-size:8px;color:#333;">Details</div>
+                </div>
+              </div>
+
+              <!-- On track -->
+              <div class="mini-rem" style="flex-direction:column;align-items:stretch;gap:5px;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div class="mini-rem-icon">💧</div>
+                  <div class="mini-rem-body"><div class="mini-rem-name">Pothos</div><div class="mini-rem-desc">Every 7 days</div></div>
+                  <div class="mini-rem-badge urg-ok">On track</div>
+                </div>
+                <div style="font-size:8px;color:#555;">Watered today ✓</div>
+                <div class="mini-progress"><div class="mini-progress-fill" style="width:5%;background:var(--blue)"></div></div>
+              </div>
+
+              <div style="font-size:8px;color:#888;text-transform:uppercase;letter-spacing:0.08em;padding:8px 0 4px;">🌿 Care Suggestions</div>
+              <div class="mini-rem" style="flex-direction:column;align-items:stretch;gap:4px;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <div class="mini-rem-icon" style="background:rgba(52,199,89,0.10);">🌿</div>
+                  <div class="mini-rem-body"><div class="mini-rem-name">Monstera</div><div class="mini-rem-desc">Care Suggestion</div></div>
+                  <div class="mini-rem-badge urg-ok">Tip</div>
+                </div>
+                <div style="display:flex;gap:4px;">
+                  <div style="flex:1;height:22px;background:#eee;border-radius:50px;display:flex;align-items:center;justify-content:center;font-size:8px;color:#333;">✨ AI Tip</div>
+                  <div style="flex:1;height:22px;background:#eee;border-radius:50px;display:flex;align-items:center;justify-content:center;font-size:8px;color:#333;">Profile</div>
+                </div>
+              </div>
+            </div>
+            <div class="phone-tab-bar">
+              <div class="phone-tab"><div class="phone-tab-icon">🌱</div>Plants</div>
+              <div class="phone-tab active" style="position:relative;"><div class="phone-tab-icon">💧</div>Remind<div style="position:absolute;top:2px;right:14px;background:#FF3B30;color:#fff;font-size:7px;font-weight:700;padding:1px 4px;border-radius:5px;">2</div></div>
+              <div class="phone-tab"><div class="phone-tab-icon">🔍</div>Discover</div>
+              <div class="phone-tab"><div class="phone-tab-icon">⚙️</div>Settings</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Urgency states table -->
+      <div style="flex:1;padding-top:32px;">
+        <div class="wide-card">
+          <div class="wide-card-title">Urgency State Logic — All 4 States</div>
+          <div class="state-matrix">
+            <table>
+              <thead>
+                <tr><th>State</th><th>Condition</th><th>Progress Fill</th><th>Badge Class</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="td-pill pill-red">Water Now</span></td>
+                  <td class="td-key">elapsed ≥ waterFrequencyDays</td>
+                  <td>100% · <span class="hl">var(--red)</span></td>
+                  <td class="td-key">.urg-now</td>
+                </tr>
+                <tr>
+                  <td><span class="td-pill pill-amber">Soon</span></td>
+                  <td class="td-key">elapsed ≥ freq − 2 days</td>
+                  <td>75–99% · <span class="hl">var(--amber)</span></td>
+                  <td class="td-key">.urg-soon</td>
+                </tr>
+                <tr>
+                  <td><span class="td-pill pill-green">On Track</span></td>
+                  <td class="td-key">elapsed &lt; freq − 2 days</td>
+                  <td>0–74% · <span class="hl">var(--blue)</span></td>
+                  <td class="td-key">.urg-ok</td>
+                </tr>
+                <tr>
+                  <td><span class="td-pill pill-gray">Never watered</span></td>
+                  <td class="td-key">lastWatered === null</td>
+                  <td>0% · empty state</td>
+                  <td class="td-key">d === null</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="two-col" style="margin-top:0;">
+          <div class="spec-card">
+            <div class="spec-card-title">Reminder Card</div>
+            <div class="spec-card-sub">Watering &amp; care rows</div>
+            <div class="spec-row"><span class="spec-key">Icon tile</span><span class="spec-val">40×40pt · radius 10pt</span></div>
+            <div class="spec-row"><span class="spec-key">Icon bg: water</span><span class="spec-val">rgba(0,122,255,.12)</span></div>
+            <div class="spec-row"><span class="spec-key">Icon bg: care</span><span class="spec-val">rgba(52,199,89,.12)</span></div>
+            <div class="spec-row"><span class="spec-key">Progress bar</span><span class="spec-val">4pt height · radius 2pt</span></div>
+            <div class="spec-row"><span class="spec-key">Action buttons</span><span class="spec-val">36pt · pill radius · gap 8pt</span></div>
+            <div class="spec-row"><span class="spec-key">Sort logic</span><span class="spec-val">desc by ratio (elapsed ÷ freq)</span></div>
+          </div>
+          <div class="spec-card">
+            <div class="spec-card-title">Tab Badge</div>
+            <div class="spec-card-sub">Plants-needing-attention count</div>
+            <div class="spec-row"><span class="spec-key">Size</span><span class="spec-val">16pt min-width · 16pt h</span></div>
+            <div class="spec-row"><span class="spec-key">Color</span><span class="spec-val">#FF3B30 (iOS system red)</span></div>
+            <div class="spec-row"><span class="spec-key">Font</span><span class="spec-val">10pt / 700</span></div>
+            <div class="spec-row"><span class="spec-key">Count source</span><span class="spec-val">needsWater + needsSoil</span></div>
+            <div class="spec-row"><span class="spec-key">Hidden when</span><span class="spec-val">count === 0</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI Tip flow -->
+    <div class="wide-card">
+      <div class="wide-card-title">AI Care Tip — getCareAI() Interaction Flow</div>
+      <div class="flow">
+        <div class="flow-node"><div class="flow-node-circle active">✨</div><div class="flow-node-label">Tap AI Tip</div><div class="flow-node-sub">Button disabled</div></div>
+        <div class="flow-arrow"></div>
+        <div class="flow-node"><div class="flow-node-circle">📡</div><div class="flow-node-label">API Request</div><div class="flow-node-sub">200 max_tokens</div></div>
+        <div class="flow-arrow"></div>
+        <div class="flow-node"><div class="flow-node-circle">🧠</div><div class="flow-node-label">Claude Response</div><div class="flow-node-sub">Plain text · 1–2 sentences</div></div>
+        <div class="flow-arrow"></div>
+        <div class="flow-node"><div class="flow-node-circle">💾</div><div class="flow-node-label">Cache to Profile</div><div class="flow-node-sub">seasonalTip · localStorage</div></div>
+        <div class="flow-arrow"></div>
+        <div class="flow-node"><div class="flow-node-circle active">🌿</div><div class="flow-node-label">Re-render</div><div class="flow-node-sub">Tip shown inline</div></div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+
+  <!-- ══ 03 · PLANT DETAIL SHEET ══ -->
+  <div class="section">
+    <div class="page-num-band">
+      <div class="page-num-badge">03</div>
+      <div class="page-num-text">Plant Detail Sheet — Full Profile</div>
+      <div class="page-num-desc">3D viewport · 4-tab segmented nav · Mode-conditional tabs</div>
+    </div>
+    <div class="sec-desc" style="padding-left:44px;margin-top:4px;">Full-screen modal overlay. Renders a procedural 3D plant model (drag-to-rotate). A segmented control navigates four tabs: Care, Facts, Garden, and Companions. Garden and Companions tabs are <code>display:none</code> for potted-mode plants — they are only visible when <code>mode === 'garden'</code>.</div>
+
+    <div class="mockup-wrap" style="gap:24px;margin-bottom:36px;align-items:flex-start;">
+
+      <!-- Care tab -->
+      <div class="mockup-col" style="max-width:196px;">
+        <div class="mockup-label">Tab 1 — Care</div>
+        <div class="phone-shell">
+          <div class="phone-screen">
+            <div style="height:110px;background:linear-gradient(145deg,#E8F5E9,#C8E6C9);display:flex;align-items:center;justify-content:center;position:relative;">
+              <div style="font-size:40px;opacity:0.5;">🌿</div>
+              <div style="position:absolute;top:6px;right:8px;background:rgba(0,0,0,0.3);color:#fff;font-size:9px;font-weight:600;padding:2px 8px;border-radius:50px;backdrop-filter:blur(4px);">↔ Drag</div>
+              <div style="position:absolute;bottom:6px;left:8px;">
+                <div style="font-size:13px;font-weight:700;color:#1A3A22;text-shadow:0 1px 2px rgba(255,255,255,0.5);">Monstera</div>
+                <div style="font-size:9px;color:#1A3A22;opacity:0.6;font-style:italic;">M. deliciosa</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:6px;padding:8px 10px;overflow-x:auto;">
+              <div style="background:#fff;border-radius:10px;padding:4px 8px;display:flex;align-items:center;gap:4px;border:1px solid #eee;white-space:nowrap;"><span style="font-size:12px;">💧</span><div><div style="font-size:7px;color:#888;">Water</div><div style="font-size:9px;font-weight:600;">Every 7d</div></div></div>
+              <div style="background:#fff;border-radius:10px;padding:4px 8px;display:flex;align-items:center;gap:4px;border:1px solid #eee;white-space:nowrap;"><span style="font-size:12px;">☀️</span><div><div style="font-size:7px;color:#888;">Light</div><div style="font-size:9px;font-weight:600;">Indirect</div></div></div>
+              <div style="background:#fff;border-radius:10px;padding:4px 8px;display:flex;align-items:center;gap:4px;border:1px solid #eee;white-space:nowrap;"><span style="font-size:12px;">🌱</span><div><div style="font-size:7px;color:#888;">Level</div><div style="font-size:9px;font-weight:600;">Beginner</div></div></div>
+            </div>
+            <div style="padding:0 10px 6px;">
+              <div style="background:#eee;border-radius:8px;display:flex;padding:2px;">
+                <div style="flex:1;background:#fff;border-radius:6px;text-align:center;font-size:8px;font-weight:700;padding:4px 0;box-shadow:0 1px 2px rgba(0,0,0,0.1);">Care</div>
+                <div style="flex:1;text-align:center;font-size:8px;color:#888;padding:4px 0;">Facts</div>
+                <div style="flex:1;text-align:center;font-size:8px;color:#888;padding:4px 0;">Garden</div>
+              </div>
+            </div>
+            <div style="padding:0 10px 10px;">
+              <div style="background:#fff;border-radius:8px;padding:8px;margin-bottom:5px;border:1px solid #eee;">
+                <div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:8px;"><span style="font-weight:600;">💧 Water Level</span><span style="color:#FF3B30;">Needs water now</span></div>
+                <div class="mini-progress"><div class="mini-progress-fill" style="width:100%;background:var(--red)"></div></div>
+              </div>
+              <div style="background:#fff;border-radius:8px;overflow:hidden;border:1px solid #eee;">
+                <div style="padding:6px 8px;border-bottom:0.5px solid #eee;font-size:8px;"><span style="font-size:11px;">💧</span> <b style="font-size:9px;">Watering</b><div style="color:#888;margin-top:1px;">Water when top inch is dry</div></div>
+                <div style="padding:6px 8px;border-bottom:0.5px solid #eee;font-size:8px;"><span style="font-size:11px;">☀️</span> <b style="font-size:9px;">Sunlight</b><div style="color:#888;margin-top:1px;">Bright indirect light preferred</div></div>
+                <div style="padding:6px 8px;font-size:8px;"><span style="font-size:11px;">🌡</span> <b style="font-size:9px;">Temperature</b><div style="color:#888;margin-top:1px;">65–85°F (18–29°C)</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Facts tab -->
+      <div class="mockup-col" style="max-width:196px;">
+        <div class="mockup-label">Tab 2 — Facts</div>
+        <div class="phone-shell">
+          <div class="phone-screen">
+            <div style="height:110px;background:linear-gradient(145deg,#E8F5E9,#C8E6C9);display:flex;align-items:center;justify-content:center;">
+              <div style="font-size:40px;opacity:0.5;">🌿</div>
+            </div>
+            <div style="display:flex;gap:6px;padding:8px 10px;overflow-x:auto;">
+              <div style="background:#fff;border-radius:10px;padding:4px 8px;display:flex;align-items:center;gap:4px;border:1px solid #eee;white-space:nowrap;"><span style="font-size:12px;">💧</span><div><div style="font-size:7px;color:#888;">Water</div><div style="font-size:9px;font-weight:600;">Every 7d</div></div></div>
+            </div>
+            <div style="padding:0 10px 6px;">
+              <div style="background:#eee;border-radius:8px;display:flex;padding:2px;">
+                <div style="flex:1;text-align:center;font-size:8px;color:#888;padding:4px 0;">Care</div>
+                <div style="flex:1;background:#fff;border-radius:6px;text-align:center;font-size:8px;font-weight:700;padding:4px 0;box-shadow:0 1px 2px rgba(0,0,0,0.1);">Facts</div>
+                <div style="flex:1;text-align:center;font-size:8px;color:#888;padding:4px 0;">Garden</div>
+              </div>
+            </div>
+            <div style="padding:0 10px 10px;display:flex;flex-direction:column;gap:5px;">
+              <div style="background:#fff;border-radius:8px;padding:8px;display:flex;gap:7px;border:1px solid #eee;"><div style="width:20px;height:20px;background:#D1F0D9;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#1A3A22;flex-shrink:0;">1</div><div style="font-size:8px;color:#444;line-height:1.4;">Monstera leaves develop holes as an adaptation to hurricane-force winds.</div></div>
+              <div style="background:#fff;border-radius:8px;padding:8px;display:flex;gap:7px;border:1px solid #eee;"><div style="width:20px;height:20px;background:#D1F0D9;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#1A3A22;flex-shrink:0;">2</div><div style="font-size:8px;color:#444;line-height:1.4;">Their aerial roots can anchor to trees over 60 feet tall in the wild.</div></div>
+              <div style="background:#fff;border-radius:8px;padding:8px;display:flex;gap:7px;border:1px solid #eee;"><div style="width:20px;height:20px;background:#D1F0D9;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#1A3A22;flex-shrink:0;">3</div><div style="font-size:8px;color:#444;line-height:1.4;">The name "deliciosa" refers to its edible, pineapple-like fruit.</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Companions tab -->
+      <div class="mockup-col" style="max-width:196px;">
+        <div class="mockup-label">Tab 4 — Companions (Garden mode only)</div>
+        <div class="phone-shell">
+          <div class="phone-screen">
+            <div style="height:110px;background:linear-gradient(145deg,#FBE9E7,#FFCCBC);display:flex;align-items:center;justify-content:center;position:relative;">
+              <div style="font-size:40px;opacity:0.5;">🌹</div>
+              <div style="position:absolute;bottom:8px;left:10px;"><div style="background:var(--g-lt);color:var(--g-dk);font-size:8px;font-weight:700;padding:2px 8px;border-radius:50px;">🏡 Garden</div></div>
+            </div>
+            <div style="display:flex;gap:6px;padding:8px 10px;">
+              <div style="background:#fff;border-radius:10px;padding:4px 8px;display:flex;align-items:center;gap:4px;border:1px solid #eee;white-space:nowrap;"><span style="font-size:12px;">🗺</span><div><div style="font-size:7px;color:#888;">Zone</div><div style="font-size:9px;font-weight:600;">5b–9a</div></div></div>
+              <div style="background:#fff;border-radius:10px;padding:4px 8px;display:flex;align-items:center;gap:4px;border:1px solid #eee;white-space:nowrap;"><span style="font-size:12px;">📐</span><div><div style="font-size:7px;color:#888;">Spacing</div><div style="font-size:9px;font-weight:600;">18–24in</div></div></div>
+            </div>
+            <div style="padding:0 10px 6px;">
+              <div style="background:#eee;border-radius:8px;display:flex;padding:2px;">
+                <div style="flex:1;text-align:center;font-size:7px;color:#888;padding:4px 0;">Care</div>
+                <div style="flex:1;text-align:center;font-size:7px;color:#888;padding:4px 0;">Facts</div>
+                <div style="flex:1;text-align:center;font-size:7px;color:#888;padding:4px 0;">Garden</div>
+                <div style="flex:1;background:#fff;border-radius:6px;text-align:center;font-size:7px;font-weight:700;padding:4px 0;box-shadow:0 1px 2px rgba(0,0,0,0.1);">Friends</div>
+              </div>
+            </div>
+            <div style="padding:0 10px 10px;">
+              <div style="font-size:7px;color:#888;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Great Companions</div>
+              <div style="background:#fff;border-radius:8px;padding:8px;margin-bottom:4px;border:1px solid #eee;">
+                <div style="display:flex;align-items:center;gap:5px;margin-bottom:3px;"><div style="width:6px;height:6px;border-radius:50%;background:#34C759;flex-shrink:0;"></div><b style="font-size:9px;">Lavender</b></div>
+                <div style="font-size:8px;color:#888;">Deters aphids and attracts pollinators naturally.</div>
+              </div>
+              <div style="font-size:7px;color:#888;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;">Avoid Planting With</div>
+              <div style="background:#fff;border-radius:8px;padding:8px;border:1px solid #eee;">
+                <div style="display:flex;align-items:center;gap:5px;margin-bottom:3px;"><div style="width:6px;height:6px;border-radius:50%;background:#FF3B30;flex-shrink:0;"></div><b style="font-size:9px;">Fennel</b></div>
+                <div style="font-size:8px;color:#888;">Allelopathic — inhibits growth of most nearby plants.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Annotations -->
+      <div style="flex:1;display:flex;flex-direction:column;gap:10px;padding-top:32px;">
+        <div class="annotation-block">
+          <div class="label">3D Viewport</div>
+          <div class="body">Full-width · 300pt height · drag-to-rotate (touch + mouse) · model built procedurally per <code>plantCategory</code> · GPU memory disposed on sheet dismiss · gradient background matches plant card color swatch.</div>
+        </div>
+        <div class="annotation-block">
+          <div class="label">Stat Pills Row</div>
+          <div class="body">Horizontally scrollable · Each pill: icon 18pt, 2-line label, corner radius 13pt, gap 6pt · Visible on all tabs · Garden mode adds a Hardiness Zone pill from <span class="hl">hardinessZone</span> API field.</div>
+        </div>
+        <div class="annotation-block">
+          <div class="label">Segmented Control — Tab Visibility Rules</div>
+          <div class="body">Potted mode: 2 tabs (Care, Facts). Garden mode: 4 tabs (Care, Facts, Garden, Companions). Garden and Companions tabs hidden via <span class="hl">display:none</span> when <span class="hl">mode !== 'garden'</span> — not removed from DOM.</div>
+        </div>
+        <div class="annotation-block">
+          <div class="label">Companion Dot Indicators</div>
+          <div class="body">Compatible: <span class="hl">#34C759</span> · Incompatible: <span class="hl">#FF3B30</span>. Companion name + reason text pulled from <code>companionPlants[]</code> and <code>incompatiblePlants[]</code> arrays in AI JSON response.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab content specs -->
+    <div class="four-col">
+      <div class="spec-card">
+        <div class="spec-card-title">Care Tab</div>
+        <div class="spec-card-sub">Default active tab — both modes</div>
+        <div class="spec-row"><span class="spec-key">Water meter</span><span class="spec-val">4pt bar · semantic color</span></div>
+        <div class="spec-row"><span class="spec-key">Care rows</span><span class="spec-val">6 fields: water/sun/temp/soil/prune/fert</span></div>
+        <div class="spec-row"><span class="spec-key">Tip banner</span><span class="spec-val">tip-banner component</span></div>
+      </div>
+      <div class="spec-card">
+        <div class="spec-card-title">Facts Tab</div>
+        <div class="spec-card-sub">AI-generated trivia — both modes</div>
+        <div class="spec-row"><span class="spec-key">Item count</span><span class="spec-val">5 facts (funFacts[5] from API)</span></div>
+        <div class="spec-row"><span class="spec-key">Number pill</span><span class="spec-val">24pt circle · g-lt bg</span></div>
+        <div class="spec-row"><span class="spec-key">Card layout</span><span class="spec-val">Horizontal · gap 10pt</span></div>
+      </div>
+      <div class="spec-card">
+        <div class="spec-card-title">Garden Tab</div>
+        <div class="spec-card-sub">Garden mode only</div>
+        <div class="spec-row"><span class="spec-key">Visibility</span><span class="spec-val">mode === 'garden'</span></div>
+        <div class="spec-row"><span class="spec-key">Fields</span><span class="spec-val">pH · spacing · zone · conditions · fert</span></div>
+        <div class="spec-row"><span class="spec-key">Data source</span><span class="spec-val">Garden schema extension</span></div>
+      </div>
+      <div class="spec-card">
+        <div class="spec-card-title">Companions Tab</div>
+        <div class="spec-card-sub">Garden mode only</div>
+        <div class="spec-row"><span class="spec-key">Visibility</span><span class="spec-val">mode === 'garden'</span></div>
+        <div class="spec-row"><span class="spec-key">Compatible dot</span><span class="spec-val">#34C759</span></div>
+        <div class="spec-row"><span class="spec-key">Incompatible dot</span><span class="spec-val">#FF3B30</span></div>
+        <div class="spec-row"><span class="spec-key">Data source</span><span class="spec-val">companionPlants[] / incompatiblePlants[]</span></div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+
+  <!-- ══ 04 · AI & DATA SPECS ══ -->
+  <div class="section">
+    <div class="page-num-band">
+      <div class="page-num-badge">04</div>
+      <div class="page-num-text">AI Integration &amp; Data Architecture</div>
+      <div class="page-num-desc">JSON schemas · localStorage keys · 3D classifier map</div>
+    </div>
+    <div class="sec-desc" style="padding-left:44px;margin-top:4px;">Plant profiles are generated on-demand via Claude Sonnet. Two schema variants exist: potted mode returns 14 fields; garden mode extends with 6 additional fields covering companion planting, soil pH, bed spacing, and hardiness zone. All data persists in localStorage under namespaced keys.</div>
+
+    <div class="two-col" style="margin-bottom:20px;">
+      <div>
+        <div class="mockup-label" style="margin-bottom:8px;">Potted Mode JSON Schema — 14 Fields</div>
+        <div class="schema-block">
+{<br>
+&nbsp;&nbsp;<span class="schema-key">"commonName"</span>: <span class="schema-type">string</span>,<br>
+&nbsp;&nbsp;<span class="schema-key">"scientificName"</span>: <span class="schema-type">string</span>,<br>
+&nbsp;&nbsp;<span class="schema-key">"description"</span>: <span class="schema-type">string</span>,<br>
+&nbsp;&nbsp;<span class="schema-key">"waterFrequencyDays"</span>: <span class="schema-type">number</span>, <span class="schema-req">← drives urgency logic</span><br>
+&nbsp;&nbsp;<span class="schema-key">"wateringInstructions"</span>: <span class="schema-type">string</span>,<br>
+&nbsp;&nbsp;<span class="schema-key">"sunlight"</span>: <span class="schema-type">string</span>,<br>
+&nbsp;&nbsp;<span class="schema-key">"sunlightInstructions"</span>: <span class="schema-type">string</span>,<br>
+&nbsp;&nbsp;<span class="schema-key">"temperature"</span>: <span class="schema-type">string</span>,<br>
+&nbsp;&nbsp;<span class="schema-key">"soil"</span>: <span class="schema-type">string</span>,<br>
+&nbsp;&nbsp;<span class="schema-key">"pruning"</span>: <span class="schema-type">string</span>,<br>
+&nbsp;&nbsp;<span class="schema-key">"fertilizingSchedule"</span>: <span class="schema-type">string</span>,<br>
+&nbsp;&nbsp;<span class="schema-key">"difficulty"</span>: <span class="schema-type">"Beginner"|"Intermediate"|"Advanced"</span>,<br>
+&nbsp;&nbsp;<span class="schema-key">"plantCategory"</span>: <span class="schema-type">string</span>, <span class="schema-req">← drives 3D classifier</span><br>
+&nbsp;&nbsp;<span class="schema-key">"funFacts"</span>: <span class="schema-type">string[5]</span> <span class="schema-req">← Facts tab content</span><br>
+}
+        </div>
+      </div>
+
+      <div>
+        <div class="mockup-label" style="margin-bottom:8px;">Garden Mode — 6 Additional Fields</div>
+        <div class="schema-block">
+<span class="schema-note">// Extends potted schema:</span><br>
+{<br>
+&nbsp;&nbsp;<span class="schema-key">"idealSoilPH"</span>: <span class="schema-type">string</span>, <span class="schema-mode">← Garden tab</span><br>
+&nbsp;&nbsp;<span class="schema-key">"idealBedSpacing"</span>: <span class="schema-type">string</span>, <span class="schema-mode">← Garden tab</span><br>
+&nbsp;&nbsp;<span class="schema-key">"companionPlants"</span>: [{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-key">"name"</span>: <span class="schema-type">string</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-key">"reason"</span>: <span class="schema-type">string</span><br>
+&nbsp;&nbsp;}], <span class="schema-mode">← Companions tab · green dot</span><br>
+&nbsp;&nbsp;<span class="schema-key">"incompatiblePlants"</span>: [{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-key">"name"</span>: <span class="schema-type">string</span>,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="schema-key">"reason"</span>: <span class="schema-type">string</span><br>
+&nbsp;&nbsp;}], <span class="schema-mode">← Companions tab · red dot</span><br>
+&nbsp;&nbsp;<span class="schema-key">"gardenConditions"</span>: <span class="schema-type">string</span>,<br>
+&nbsp;&nbsp;<span class="schema-key">"hardinessZone"</span>: <span class="schema-type">string</span> <span class="schema-mode">← stat pill (garden only)</span><br>
+}
+        </div>
+      </div>
+    </div>
+
+    <!-- localStorage key registry -->
+    <div class="wide-card" style="margin-bottom:20px;">
+      <div class="wide-card-title">localStorage Key Registry — Developer Handoff Reference</div>
+      <div class="state-matrix">
+        <table>
+          <thead>
+            <tr><th>Key</th><th>Type</th><th>Contents</th><th>Updated When</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="td-key">verdant-plants</td><td><span class="td-pill pill-green">JSON Array</span></td><td>All plant objects including profiles &amp; lastWatered timestamps</td><td>Add, delete, water log, profile fetch</td></tr>
+            <tr><td class="td-key">verdant-remlog</td><td><span class="td-pill pill-blue">JSON Array</span></td><td>Soil care log entries <code>{plantId, type, doneAt}</code></td><td>Log soil / repotting actions</td></tr>
+            <tr><td class="td-key">verdant-theme</td><td><span class="td-pill pill-gray">String</span></td><td><code>"light"</code> or <code>"dark"</code></td><td>Settings dark mode toggle</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 3D Classifier -->
+    <div class="wide-card">
+      <div class="wide-card-title">3D Model Classifier — classifyPlant() Lookup Table</div>
+      <div class="state-matrix">
+        <table>
+          <thead>
+            <tr><th>Output Key</th><th>Matched Terms (from plantCategory)</th><th>Builder Function</th><th>Available In</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="td-key">tulip</td><td>tulip, flower, orchid, daisy</td><td class="td-key">buildTulip()</td><td>Both</td></tr>
+            <tr><td class="td-key">sunflower</td><td>sunflower</td><td class="td-key">buildSunflower()</td><td>Both</td></tr>
+            <tr><td class="td-key">rosebush</td><td>rose, bush, lavender, herb, shrub</td><td class="td-key">buildRoseBush()</td><td>Both</td></tr>
+            <tr><td class="td-key">monstera</td><td>monstera, tropical, palm, banana</td><td class="td-key">buildMonstera()</td><td>Both</td></tr>
+            <tr><td class="td-key">pothos</td><td>pothos, philodendron, trailing</td><td class="td-key">buildPothos()</td><td>Both</td></tr>
+            <tr><td class="td-key">snakeplant</td><td>snake, dracaena, sansevieria, tall</td><td class="td-key">buildSnakePlant()</td><td>Both</td></tr>
+            <tr><td class="td-key">succulent</td><td>succulent, echeveria, jade, aloe</td><td class="td-key">buildSucculent()</td><td>Both</td></tr>
+            <tr><td class="td-key">cactus</td><td>cactus, cacti</td><td class="td-key">buildCactus()</td><td>Both</td></tr>
+            <tr><td class="td-key">pothos</td><td><i>fallback — no match</i></td><td class="td-key">buildPothos()</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+
+  <!-- ══ 05 · SETTINGS ══ -->
+  <div class="section">
+    <div class="page-num-band">
+      <div class="page-num-badge">05</div>
+      <div class="page-num-text">Settings Tab &amp; Mode Bifurcation</div>
+      <div class="page-num-desc">Dark mode · Data management · Potted vs. Garden feature matrix</div>
+    </div>
+    <div class="sec-desc" style="padding-left:44px;margin-top:4px;">The Settings tab provides appearance, data management, and app info controls. It also serves as the reference point for understanding Potted vs. Garden mode bifurcation — the two modes differ in visible tabs, available API fields, stat pills, card badges, and companion data.</div>
+
+    <div class="mockup-wrap" style="gap:24px;margin-bottom:36px;">
+
+      <!-- Settings phone — dark mode ON -->
+      <div class="mockup-col" style="max-width:196px;">
+        <div class="mockup-label">Settings Tab — Dark Mode Active</div>
+        <div class="phone-shell">
+          <div class="phone-screen" style="background:#1C1C1E;">
+            <div class="phone-status" style="background:#1C1C1E;"><span class="phone-time" style="color:#fff;">9:41</span><span class="phone-icons" style="color:#aaa;">●●● 📶 🔋</span></div>
+            <div class="phone-nav" style="border-bottom:0.5px solid rgba(255,255,255,0.1);"><div class="phone-nav-title" style="color:#fff;">Settings</div></div>
+            <div class="phone-content" style="background:#1C1C1E;">
+              <!-- Profile card -->
+              <div style="background:#2C2C2E;border-radius:14px;padding:14px;display:flex;align-items:center;gap:10px;margin-bottom:12px;border:1px solid rgba(255,255,255,0.08);">
+                <div style="width:44px;height:44px;background:linear-gradient(135deg,#34C759,#1A3A22);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🌱</div>
+                <div><div style="font-size:12px;font-weight:700;color:#fff;">My Garden</div><div style="font-size:10px;color:#888;">4 plants tracked</div></div>
+              </div>
+              <!-- Appearance group -->
+              <div style="font-size:8px;color:#666;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:5px;">Appearance</div>
+              <div style="background:#2C2C2E;border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);margin-bottom:10px;">
+                <div style="padding:8px 10px;display:flex;align-items:center;gap:8px;min-height:36px;">
+                  <div style="width:24px;height:24px;background:rgba(255,255,255,0.1);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;">🌙</div>
+                  <span style="font-size:11px;flex:1;color:#fff;">Dark Mode</span>
+                  <!-- Toggle ON -->
+                  <div style="width:36px;height:22px;background:#34C759;border-radius:11px;position:relative;flex-shrink:0;">
+                    <div style="position:absolute;right:2px;top:2px;width:18px;height:18px;background:#fff;border-radius:50%;box-shadow:0 1px 3px rgba(0,0,0,0.4);"></div>
+                  </div>
+                </div>
+              </div>
+              <!-- Data group -->
+              <div style="font-size:8px;color:#666;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:5px;">Data</div>
+              <div style="background:#2C2C2E;border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);margin-bottom:10px;">
+                <div style="padding:8px 10px;display:flex;align-items:center;gap:8px;min-height:36px;">
+                  <div style="width:24px;height:24px;background:rgba(255,59,48,0.18);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;">❌</div>
+                  <span style="font-size:11px;flex:1;color:#FF3B30;">Clear All Plants</span>
+                </div>
+              </div>
+              <!-- About group -->
+              <div style="font-size:8px;color:#666;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:5px;">About</div>
+              <div style="background:#2C2C2E;border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);">
+                <div style="padding:8px 10px;display:flex;align-items:center;gap:8px;min-height:36px;border-bottom:0.5px solid rgba(255,255,255,0.08);">
+                  <div style="width:24px;height:24px;background:rgba(52,199,89,0.2);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;">🌱</div>
+                  <span style="font-size:11px;flex:1;color:#fff;">Verdant</span><span style="font-size:10px;color:#666;">v3.0</span>
+                </div>
+                <div style="padding:8px 10px;display:flex;align-items:center;gap:8px;min-height:36px;">
+                  <div style="width:24px;height:24px;background:rgba(255,255,255,0.1);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;">🤖</div>
+                  <span style="font-size:11px;flex:1;color:#fff;">Powered by Claude AI</span><span style="font-size:11px;color:#555;">›</span>
+                </div>
+              </div>
+            </div>
+            <!-- Tab bar -->
+            <div class="phone-tab-bar" style="background:rgba(28,28,30,0.94);border-top:0.5px solid rgba(255,255,255,0.1);">
+              <div class="phone-tab" style="color:#666;"><div class="phone-tab-icon">🌱</div>Plants</div>
+              <div class="phone-tab" style="color:#666;"><div class="phone-tab-icon">💧</div>Remind</div>
+              <div class="phone-tab" style="color:#666;"><div class="phone-tab-icon">🔍</div>Discover</div>
+              <div class="phone-tab active"><div class="phone-tab-icon">⚙️</div>Settings</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mode bifurcation -->
+      <div style="flex:1;padding-top:32px;display:flex;flex-direction:column;gap:12px;">
+        <div class="wide-card">
+          <div class="wide-card-title">Potted vs. Garden Mode — Feature Matrix</div>
+          <div class="state-matrix">
+            <table>
+              <thead>
+                <tr><th>Feature</th><th>🌱 Potted</th><th>🏡 Garden</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>3D model base</td><td>Terracotta pot</td><td>Ground patch</td></tr>
+                <tr><td>Detail tabs</td><td>Care · Facts</td><td>Care · Facts · Garden · Companions</td></tr>
+                <tr><td>Stat pills</td><td>Water · Light · Difficulty</td><td>+ Hardiness Zone</td></tr>
+                <tr><td>API schema fields</td><td>14 core fields</td><td>14 + 6 garden fields</td></tr>
+                <tr><td>Card badge</td><td>—</td><td><span class="td-pill pill-green">🏡 Garden</span></td></tr>
+                <tr><td>Add sheet tip banner</td><td>Hidden</td><td>Green tip banner shown</td></tr>
+                <tr><td>Companion data fetched</td><td>No</td><td>companionPlants[] + incompatiblePlants[]</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="two-col">
+          <div class="spec-card">
+            <div class="spec-card-title">Settings Row Specs</div>
+            <div class="spec-card-sub">iOS grouped settings style</div>
+            <div class="spec-row"><span class="spec-key">Row icon size</span><span class="spec-val">30×30pt · radius 7pt</span></div>
+            <div class="spec-row"><span class="spec-key">Row min height</span><span class="spec-val">44pt (iOS HIG)</span></div>
+            <div class="spec-row"><span class="spec-key">Label size</span><span class="spec-val">17pt / 400</span></div>
+            <div class="spec-row"><span class="spec-key">Value color</span><span class="spec-val">var(--label2)</span></div>
+            <div class="spec-row"><span class="spec-key">Danger label</span><span class="spec-val">var(--red) · .settings-danger</span></div>
+            <div class="spec-row"><span class="spec-key">Separator</span><span class="spec-val">0.5px var(--sep)</span></div>
+          </div>
+          <div class="spec-card">
+            <div class="spec-card-title">Profile Card</div>
+            <div class="spec-card-sub">Top-of-settings user summary</div>
+            <div class="spec-row"><span class="spec-key">Avatar size</span><span class="spec-val">64×64pt · 50% radius</span></div>
+            <div class="spec-row"><span class="spec-key">Avatar bg</span><span class="spec-val">linear-gradient(135°, g, g-dk)</span></div>
+            <div class="spec-row"><span class="spec-key">Name size</span><span class="spec-val">20pt / 700</span></div>
+            <div class="spec-row"><span class="spec-key">Bio</span><span class="spec-val">Dynamic: "n plants tracked"</span></div>
+            <div class="spec-row"><span class="spec-key">Card radius</span><span class="spec-val">20pt (--r-xl)</span></div>
+          </div>
+        </div>
+
+        <div class="annotation-block">
+          <div class="label">Dark Mode Implementation</div>
+          <div class="body">Toggled via <span class="hl">data-theme="dark"</span> on <code>&lt;body&gt;</code>. All color tokens override via CSS <code>[data-theme="dark"]</code> attribute selector — no separate stylesheet. State persisted to <span class="hl">verdant-theme</span> in localStorage. Tab bar transitions from <span class="hl">rgba(249,249,249,.94)</span> to <span class="hl">rgba(28,28,30,.94)</span>. Blur backdrop maintained in both modes.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div style="border-top:1px solid var(--sep);padding-top:24px;display:flex;justify-content:space-between;align-items:center;color:var(--ink3);font-size:11px;font-family:var(--mono);">
+    <span>Verdant — Plant Care App · UI Guide Supplement · Sections 01–05</span>
+    <span>Amaya Whitted · 2026</span>
+  </div>
+
+</div>
+</body>
+</html>
