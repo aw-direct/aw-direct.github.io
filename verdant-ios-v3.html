@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Verdant</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+/* ── iOS HIG Tokens ─────────────────────────────────────────────────────── */
+:root {
+  --g:#34C759;--g-dk:#248A3D;--g-lt:#D1F0D9;
+  --blue:#007AFF;--red:#FF3B30;--amber:#FF9500;--purple:#AF52DE;
+  --label:#000;--label2:rgba(60,60,67,.60);--label3:rgba(60,60,67,.30);
+  --bg:#F2F2F7;--bg2:#FFFFFF;--bg3:#F2F2F7;
+  --sep:rgba(60,60,67,.29);--fill:rgba(120,120,128,.12);--fill2:rgba(120,120,128,.16);
+  --r-sm:10px;--r-md:13px;--r-lg:16px;--r-xl:20px;--r-pill:50px;
+  --tap:44px;
+  --sf:-apple-system,"SF Pro Text","Helvetica Neue",sans-serif;
+  --sf-d:-apple-system,"SF Pro Display","Helvetica Neue",sans-serif;
+  --safe-top:env(safe-area-inset-top,48px);
+  --safe-bot:env(safe-area-inset-bottom,34px);
+}
+[data-theme="dark"]{
+  --label:#FFF;--label2:rgba(235,235,245,.60);--label3:rgba(235,235,245,.30);
+  --bg:#000;--bg2:#1C1C1E;--bg3:#2C2C2E;
+  --sep:rgba(84,84,88,.65);--fill:rgba(118,118,128,.24);--fill2:rgba(118,118,128,.32);
+  --g-lt:rgba(52,199,89,.18);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:var(--sf);background:var(--bg);color:var(--label);max-width:393px;margin:0 auto;min-height:100vh;overflow-x:hidden;transition:background .3s,color .3s;}
+
+/* ── Status Bar ─────────────────────────────────────────────────────────── */
+.status-bar{height:var(--safe-top);min-height:48px;background:var(--bg2);display:flex;align-items:flex-end;justify-content:space-between;padding:0 24px 8px;position:sticky;top:0;z-index:100;transition:background .3s;}
+.status-time{font-size:15px;font-weight:600;letter-spacing:-.3px;}
+.status-icons{display:flex;gap:6px;align-items:center;}
+.status-icons svg{fill:var(--label);}
+
+/* ── Nav Bar ────────────────────────────────────────────────────────────── */
+.nav-bar{background:var(--bg2);padding:4px 16px 12px;border-bottom:.5px solid var(--sep);position:sticky;top:calc(var(--safe-top,48px));z-index:99;transition:background .3s;}
+.nav-row{display:flex;align-items:flex-end;justify-content:space-between;}
+.nav-large-title{font-family:var(--sf-d);font-size:34px;font-weight:700;letter-spacing:.37px;color:var(--label);line-height:41px;}
+.nav-subtitle{font-size:13px;color:var(--label2);letter-spacing:-.08px;margin-top:1px;}
+.nav-actions{display:flex;gap:4px;}
+.nav-icon-btn{width:var(--tap);height:var(--tap);display:flex;align-items:center;justify-content:center;color:var(--g);font-size:22px;border-radius:50%;background:none;border:none;cursor:pointer;transition:background .15s;}
+.nav-icon-btn:active{background:var(--fill);}
+
+/* ── Segment ────────────────────────────────────────────────────────────── */
+.segment-wrap{padding:8px 16px 0;background:var(--bg2);transition:background .3s;}
+.segment{background:var(--fill);border-radius:var(--r-sm);padding:2px;display:flex;}
+.seg-btn{flex:1;height:32px;border:none;border-radius:8px;background:none;font-family:var(--sf);font-size:13px;font-weight:500;color:var(--label2);cursor:pointer;transition:all .2s cubic-bezier(.4,0,.2,1);letter-spacing:-.08px;}
+.seg-btn.active{background:var(--bg2);color:var(--label);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.08);}
+
+/* ── Search ─────────────────────────────────────────────────────────────── */
+.search-wrap{padding:8px 16px 10px;background:var(--bg2);border-bottom:.5px solid var(--sep);transition:background .3s;}
+.search-bar{background:var(--fill);border-radius:var(--r-sm);height:36px;display:flex;align-items:center;gap:6px;padding:0 10px;}
+.search-bar input{border:none;background:none;font-family:var(--sf);font-size:17px;color:var(--label);flex:1;outline:none;letter-spacing:-.41px;}
+.search-bar input::placeholder{color:var(--label3);}
+
+/* ── Scroll content ─────────────────────────────────────────────────────── */
+.scroll-content{padding:16px 16px calc(var(--safe-bot,34px) + 83px);}
+
+/* ── Alert banner ───────────────────────────────────────────────────────── */
+.alert-banner{background:var(--blue);border-radius:var(--r-lg);padding:14px 16px;display:flex;align-items:center;gap:12px;margin-bottom:16px;cursor:pointer;transition:opacity .15s;}
+.alert-banner:active{opacity:.8;}
+.alert-icon{font-size:22px;flex-shrink:0;}
+.alert-text{flex:1;}
+.alert-title{font-size:15px;font-weight:600;color:#fff;letter-spacing:-.24px;}
+.alert-sub{font-size:13px;color:rgba(255,255,255,.80);margin-top:1px;letter-spacing:-.08px;}
+
+/* ── Plant Grid ─────────────────────────────────────────────────────────── */
+.plants-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.plant-card{background:var(--bg2);border-radius:var(--r-xl);overflow:hidden;cursor:pointer;transition:transform .18s cubic-bezier(.4,0,.2,1),opacity .18s;position:relative;}
+.plant-card:active{transform:scale(.96);opacity:.85;}
+.plant-thumb{height:140px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;}
+.plant-thumb canvas{position:absolute;inset:0;width:100%!important;height:100%!important;}
+.plant-thumb-bg{position:absolute;inset:0;pointer-events:none;}
+.plant-thumb-bg.green{background:linear-gradient(145deg,#E8F5E9,#C8E6C9);}
+.plant-thumb-bg.sage {background:linear-gradient(145deg,#F1F8E9,#DCEDC8);}
+.plant-thumb-bg.terr {background:linear-gradient(145deg,#FBE9E7,#FFCCBC);}
+.plant-thumb-bg.gold {background:linear-gradient(145deg,#FFFDE7,#FFF9C4);}
+.plant-thumb-emoji{font-size:52px;position:relative;z-index:1;}
+.plant-card-body{padding:10px 12px 12px;}
+.plant-card-name{font-size:15px;font-weight:600;color:var(--label);letter-spacing:-.24px;line-height:20px;}
+.plant-card-sci{font-size:12px;color:var(--label2);font-style:italic;margin-top:1px;}
+.plant-card-badges{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap;}
+.badge{font-size:11px;font-weight:500;padding:3px 8px;border-radius:var(--r-pill);display:inline-flex;align-items:center;gap:3px;}
+.b-water{background:rgba(0,122,255,.12);color:#007AFF;}
+.b-sun{background:rgba(255,149,0,.12);color:#FF9500;}
+.b-garden{background:var(--g-lt);color:var(--g-dk);}
+.b-alert{background:rgba(255,59,48,.12);color:var(--red);}
+.b-soil{background:rgba(175,82,222,.12);color:#AF52DE;}
+.card-del{position:absolute;top:8px;right:8px;width:28px;height:28px;background:rgba(0,0,0,.25);border:none;border-radius:50%;color:rgba(255,255,255,.9);font-size:13px;display:flex;align-items:center;justify-content:center;cursor:pointer;backdrop-filter:blur(4px);z-index:5;}
+.card-del:active{background:rgba(255,59,48,.7);}
+
+/* ── Section header ─────────────────────────────────────────────────────── */
+.sec-hdr{font-size:13px;font-weight:400;color:var(--label2);letter-spacing:-.08px;text-transform:uppercase;padding:0 4px 6px;margin-top:24px;}
+.sec-hdr:first-child{margin-top:0;}
+
+/* ── List group ─────────────────────────────────────────────────────────── */
+.list-group{background:var(--bg2);border-radius:var(--r-lg);overflow:hidden;margin-bottom:12px;transition:background .3s;}
+.list-row{min-height:var(--tap);padding:11px 16px;display:flex;align-items:flex-start;gap:12px;border-bottom:.5px solid var(--sep);}
+.list-row:last-child{border-bottom:none;}
+.row-icon{font-size:20px;flex-shrink:0;margin-top:1px;}
+.row-body{flex:1;}
+.row-label{font-size:15px;font-weight:500;color:var(--label);letter-spacing:-.24px;line-height:20px;}
+.row-val{font-size:14px;color:var(--label2);letter-spacing:-.24px;line-height:20px;margin-top:2px;}
+
+/* ── iOS Toggle ─────────────────────────────────────────────────────────── */
+.ios-toggle{position:relative;width:51px;height:31px;flex-shrink:0;}
+.ios-toggle input{opacity:0;width:0;height:0;position:absolute;}
+.toggle-track{position:absolute;inset:0;background:var(--fill2);border-radius:15.5px;transition:background .25s;}
+.ios-toggle input:checked+.toggle-track{background:var(--g);}
+.toggle-thumb{position:absolute;top:2px;left:2px;width:27px;height:27px;background:#fff;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,.25);transition:transform .25s cubic-bezier(.4,0,.2,1);}
+.ios-toggle input:checked~.toggle-thumb{transform:translateX(20px);}
+
+/* ── Reminder cards ─────────────────────────────────────────────────────── */
+.reminder-card{background:var(--bg2);border-radius:var(--r-lg);margin-bottom:10px;overflow:hidden;transition:background .3s;}
+.rem-header{display:flex;align-items:center;gap:12px;padding:14px 16px 10px;}
+.rem-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.rem-icon.water{background:rgba(0,122,255,.12);}
+.rem-icon.soil {background:rgba(175,82,222,.12);}
+.rem-icon.care {background:rgba(52,199,89,.12);}
+.rem-plant{font-size:15px;font-weight:600;color:var(--label);letter-spacing:-.24px;}
+.rem-type{font-size:13px;color:var(--label2);letter-spacing:-.08px;}
+.rem-urgency{margin-left:auto;font-size:12px;font-weight:600;padding:4px 10px;border-radius:var(--r-pill);}
+.urg-now{background:rgba(255,59,48,.12);color:var(--red);}
+.urg-soon{background:rgba(255,149,0,.12);color:var(--amber);}
+.urg-ok{background:rgba(52,199,89,.12);color:var(--g-dk);}
+.rem-body{padding:0 16px 14px;}
+.rem-desc{font-size:14px;color:var(--label2);letter-spacing:-.24px;line-height:20px;margin-bottom:10px;}
+.rem-progress{height:4px;background:var(--fill);border-radius:2px;margin-bottom:10px;overflow:hidden;}
+.rem-progress-fill{height:100%;border-radius:2px;transition:width .6s ease;}
+.rem-actions{display:flex;gap:8px;}
+.rem-btn{flex:1;height:36px;border:none;border-radius:var(--r-pill);font-family:var(--sf);font-size:14px;font-weight:600;cursor:pointer;transition:opacity .15s;}
+.rem-btn:active{opacity:.7;}
+.btn-primary{background:var(--g);color:#fff;}
+.btn-secondary{background:var(--fill);color:var(--label);}
+
+/* ── Discover ────────────────────────────────────────────────────────────── */
+.discover-content{padding:16px 16px calc(var(--safe-bot,34px) + 83px);}
+.scanner-hero{background:var(--bg2);border-radius:var(--r-xl);overflow:hidden;margin-bottom:16px;transition:background .3s;}
+.viewfinder{height:260px;background:#000;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.vf-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
+.vf-frame{width:200px;height:200px;position:relative;}
+.vf-corner{position:absolute;width:28px;height:28px;border-color:#fff;border-style:solid;border-width:0;}
+.vf-tl{top:0;left:0;border-top-width:3px;border-left-width:3px;border-radius:4px 0 0 0;}
+.vf-tr{top:0;right:0;border-top-width:3px;border-right-width:3px;border-radius:0 4px 0 0;}
+.vf-bl{bottom:0;left:0;border-bottom-width:3px;border-left-width:3px;border-radius:0 0 0 4px;}
+.vf-br{bottom:0;right:0;border-bottom-width:3px;border-right-width:3px;border-radius:0 0 4px 0;}
+.vf-scan-line{position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--g),transparent);animation:scan 2s ease-in-out infinite;}
+@keyframes scan{0%{top:0;opacity:1}50%{top:198px}100%{top:0;opacity:1}}
+.vf-hint{color:rgba(255,255,255,.7);font-size:13px;letter-spacing:-.08px;text-align:center;}
+.scanner-controls{padding:16px;}
+.scanner-btn-row{display:flex;gap:10px;margin-bottom:12px;}
+.scanner-main-btn{flex:1;height:52px;background:var(--g);color:#fff;border:none;border-radius:var(--r-lg);font-family:var(--sf);font-size:17px;font-weight:600;letter-spacing:-.41px;cursor:pointer;transition:opacity .15s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.scanner-main-btn:active{opacity:.8;}
+.scanner-main-btn.scanning{background:var(--fill2);color:var(--label2);}
+.scanner-alt-btn{width:52px;height:52px;background:var(--fill);border:none;border-radius:var(--r-lg);font-size:22px;cursor:pointer;transition:opacity .15s;}
+.scanner-alt-btn:active{opacity:.7;}
+.scan-result{background:var(--bg2);border-radius:var(--r-xl);overflow:hidden;margin-bottom:16px;border:1.5px solid var(--g);transition:background .3s;}
+.scan-result-header{display:flex;align-items:center;gap:12px;padding:16px 16px 12px;}
+.scan-result-emoji{width:56px;height:56px;background:var(--g-lt);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;}
+.scan-result-name{font-size:20px;font-weight:700;color:var(--label);letter-spacing:-.45px;}
+.scan-result-sci{font-size:14px;color:var(--label2);font-style:italic;margin-top:2px;}
+.scan-confidence{font-size:12px;font-weight:600;color:var(--g-dk);background:var(--g-lt);padding:3px 10px;border-radius:var(--r-pill);margin-left:auto;}
+.scan-result-body{padding:0 16px 16px;}
+.scan-fact{background:var(--bg3);border-radius:var(--r-md);padding:10px 12px;font-size:14px;color:var(--label2);line-height:20px;letter-spacing:-.24px;margin-bottom:10px;}
+.scan-add-btn{width:100%;height:44px;background:var(--g);color:#fff;border:none;border-radius:var(--r-lg);font-family:var(--sf);font-size:17px;font-weight:600;letter-spacing:-.41px;cursor:pointer;transition:opacity .15s;}
+.scan-add-btn:active{opacity:.8;}
+.discover-grid-title{font-size:20px;font-weight:700;color:var(--label);letter-spacing:-.45px;margin-bottom:14px;}
+.discover-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.disc-card{background:var(--bg2);border-radius:var(--r-lg);padding:14px;cursor:pointer;transition:transform .15s;display:flex;flex-direction:column;gap:6px;}
+.disc-card:active{transform:scale(.97);}
+.disc-card-icon{font-size:28px;}
+.disc-card-name{font-size:14px;font-weight:600;color:var(--label);letter-spacing:-.24px;}
+.disc-card-tag{font-size:12px;color:var(--label2);}
+
+/* ── Settings ────────────────────────────────────────────────────────────── */
+.settings-content{padding:16px 16px calc(var(--safe-bot,34px) + 83px);}
+.settings-profile{background:var(--bg2);border-radius:var(--r-xl);padding:20px;display:flex;align-items:center;gap:16px;margin-bottom:24px;transition:background .3s;}
+.profile-avatar{width:64px;height:64px;background:linear-gradient(135deg,var(--g),var(--g-dk));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;}
+.profile-name{font-size:20px;font-weight:700;color:var(--label);letter-spacing:-.45px;}
+.profile-bio{font-size:14px;color:var(--label2);margin-top:2px;letter-spacing:-.24px;}
+.settings-sec-label{font-size:13px;color:var(--label2);text-transform:uppercase;letter-spacing:-.08px;padding:0 4px;margin-bottom:8px;}
+.settings-group{background:var(--bg2);border-radius:var(--r-lg);overflow:hidden;margin-bottom:24px;transition:background .3s;}
+.settings-row{min-height:var(--tap);padding:0 16px;display:flex;align-items:center;gap:12px;border-bottom:.5px solid var(--sep);}
+.settings-row:last-child{border-bottom:none;}
+.settings-row-icon{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.settings-row-label{flex:1;font-size:17px;letter-spacing:-.41px;color:var(--label);}
+.settings-row-val{font-size:17px;color:var(--label2);letter-spacing:-.41px;}
+.settings-row-chev{color:var(--label3);font-size:14px;}
+.settings-danger{color:var(--red)!important;}
+
+/* ── Tab Bar ─────────────────────────────────────────────────────────────── */
+.tab-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:393px;background:rgba(249,249,249,.94);backdrop-filter:blur(20px) saturate(180%);-webkit-backdrop-filter:blur(20px) saturate(180%);border-top:.5px solid var(--sep);display:flex;padding-bottom:var(--safe-bot,34px);z-index:90;transition:background .3s;}
+[data-theme="dark"] .tab-bar{background:rgba(28,28,30,.94);}
+.tab-item{flex:1;height:var(--tap);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;border:none;background:none;font-family:var(--sf);transition:opacity .15s;position:relative;}
+.tab-item:active{opacity:.6;}
+.tab-icon{font-size:22px;}
+.tab-label{font-size:10px;font-weight:500;letter-spacing:-.24px;color:var(--label3);}
+.tab-item.active .tab-label{color:var(--g);}
+.tab-badge{position:absolute;top:4px;margin-left:14px;background:var(--red);color:#fff;font-size:10px;font-weight:700;min-width:16px;height:16px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 4px;}
+
+/* ── Add sheet ───────────────────────────────────────────────────────────── */
+.sheet-overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.50);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);display:none;align-items:flex-end;}
+.sheet-overlay.open{display:flex;}
+.sheet{background:var(--bg2);border-radius:20px 20px 0 0;width:100%;padding:0 0 calc(var(--safe-bot,34px)+16px);transform:translateY(100%);transition:transform .4s cubic-bezier(.32,.72,0,1);}
+.sheet-overlay.open .sheet{transform:translateY(0);}
+.sheet-handle{width:36px;height:5px;background:var(--fill2);border-radius:3px;margin:8px auto 0;}
+.sheet-hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 8px;}
+.sheet-title{font-size:17px;font-weight:600;letter-spacing:-.41px;}
+.sheet-cancel,.sheet-confirm{font-size:17px;background:none;border:none;cursor:pointer;min-width:var(--tap);min-height:var(--tap);display:flex;align-items:center;color:var(--blue);}
+.sheet-confirm{font-weight:600;justify-content:flex-end;}
+.sheet-sec{padding:8px 20px 0;}
+.sheet-lbl{font-size:13px;font-weight:400;color:var(--label2);letter-spacing:-.08px;margin-bottom:6px;text-transform:uppercase;}
+.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:4px;}
+.mode-btn{height:72px;border-radius:var(--r-lg);border:1.5px solid var(--sep);background:var(--fill);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;font-family:var(--sf);}
+.mode-btn.sel{border-color:var(--g);background:var(--g-lt);}
+.mode-icon{font-size:26px;}
+.mode-lbl{font-size:13px;font-weight:500;color:var(--label);}
+.mode-btn.sel .mode-lbl{color:var(--g-dk);}
+.emoji-row{display:flex;gap:6px;overflow-x:auto;padding:2px 0 6px;scrollbar-width:none;}
+.emoji-row::-webkit-scrollbar{display:none;}
+.emoji-btn{width:44px;height:44px;flex-shrink:0;border-radius:var(--r-sm);border:1.5px solid transparent;background:var(--fill);font-size:22px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.emoji-btn.sel{border-color:var(--g);background:var(--g-lt);}
+.ios-field{background:var(--fill);border-radius:var(--r-sm);height:44px;padding:0 14px;font-family:var(--sf);font-size:17px;color:var(--label);border:none;outline:none;width:100%;letter-spacing:-.41px;}
+.ios-field::placeholder{color:var(--label3);}
+.garden-tip{background:var(--g-lt);border-radius:var(--r-md);padding:10px 14px;display:none;gap:8px;align-items:flex-start;margin-top:6px;}
+.garden-tip.show{display:flex;}
+.garden-tip-text{font-size:13px;color:var(--g-dk);letter-spacing:-.08px;line-height:1.45;}
+
+/* ── Detail sheet ────────────────────────────────────────────────────────── */
+.detail-overlay{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.55);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);display:none;align-items:flex-end;}
+.detail-overlay.open{display:flex;}
+.detail-sheet{background:var(--bg);border-radius:20px 20px 0 0;width:100%;max-height:94vh;overflow-y:auto;transform:translateY(100%);transition:transform .4s cubic-bezier(.32,.72,0,1);-webkit-overflow-scrolling:touch;}
+.detail-overlay.open .detail-sheet{transform:translateY(0);}
+
+/* ── 3D Viewer in Detail ─────────────────────────────────────────────────── */
+.detail-3d-wrap{position:relative;border-radius:20px 20px 0 0;overflow:hidden;height:300px;}
+.detail-3d-bg{position:absolute;inset:0;pointer-events:none;}
+.detail-3d-bg.green{background:linear-gradient(160deg,#C8E6C9,#A5D6A7);}
+.detail-3d-bg.sage {background:linear-gradient(160deg,#DCEDC8,#C5E1A5);}
+.detail-3d-bg.terr {background:linear-gradient(160deg,#FFCCBC,#FFAB91);}
+.detail-3d-bg.gold {background:linear-gradient(160deg,#FFF9C4,#FFF59D);}
+#detail-canvas{display:block;width:100%!important;height:300px!important;cursor:grab;position:relative;z-index:1;}
+#detail-canvas:active{cursor:grabbing;}
+.detail-3d-drag{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.35);backdrop-filter:blur(4px);border-radius:20px;padding:3px 12px;color:rgba(255,255,255,.65);font-size:10px;letter-spacing:1.5px;pointer-events:none;white-space:nowrap;z-index:2;}
+.detail-close{position:absolute;top:14px;right:14px;width:30px;height:30px;background:rgba(0,0,0,.28);border:none;border-radius:50%;color:#fff;font-size:14px;display:flex;align-items:center;justify-content:center;cursor:pointer;backdrop-filter:blur(4px);z-index:10;}
+.detail-handle-bar{width:36px;height:5px;background:rgba(255,255,255,.5);border-radius:3px;position:absolute;top:8px;left:50%;transform:translateX(-50%);z-index:10;}
+.detail-body{padding:0 16px 40px;background:var(--bg);transition:background .3s;}
+.detail-title-row{padding:16px 0 4px;display:flex;justify-content:space-between;align-items:flex-start;}
+.detail-name{font-family:var(--sf-d);font-size:28px;font-weight:700;letter-spacing:.36px;color:var(--label);line-height:34px;}
+.detail-sci{font-size:15px;color:var(--label2);font-style:italic;letter-spacing:-.24px;}
+.water-btn{background:var(--blue);color:#fff;border:none;border-radius:var(--r-pill);padding:0 16px;height:32px;font-size:14px;font-weight:600;cursor:pointer;flex-shrink:0;margin-top:4px;transition:opacity .15s;}
+.water-btn:active{opacity:.7;}
+.stat-row{display:flex;gap:8px;margin:12px 0 16px;flex-wrap:wrap;}
+.stat-pill{background:var(--bg2);border-radius:var(--r-md);padding:8px 12px;display:flex;align-items:center;gap:6px;transition:background .3s;}
+.stat-pill-icon{font-size:18px;}
+.stat-pill-lbl{font-size:11px;color:var(--label2);}
+.stat-pill-val{font-size:13px;font-weight:600;color:var(--label);}
+.tip-banner{background:var(--bg2);border-radius:var(--r-lg);padding:14px 16px;border-left:3px solid var(--g);margin-bottom:12px;transition:background .3s;}
+.tip-text{font-size:14px;color:var(--label);letter-spacing:-.24px;line-height:20px;}
+.fact-card{background:var(--bg2);border-radius:var(--r-lg);padding:14px 16px;margin-bottom:8px;display:flex;gap:10px;transition:background .3s;}
+.fact-num{width:24px;height:24px;border-radius:50%;background:var(--g-lt);color:var(--g-dk);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.fact-text{font-size:15px;color:var(--label);letter-spacing:-.24px;line-height:22px;}
+.companion-card{background:var(--bg2);border-radius:var(--r-lg);padding:12px 16px;margin-bottom:8px;transition:background .3s;}
+.companion-row{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
+.c-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.companion-name{font-size:15px;font-weight:600;color:var(--label);}
+.companion-reason{font-size:14px;color:var(--label2);line-height:20px;}
+
+/* ── Water / Sunlight meters ────────────────────────────────────────────── */
+.meter-card{background:var(--bg2);border-radius:var(--r-lg);padding:14px 16px;margin-bottom:12px;transition:background .3s;}
+.meter-label{font-size:13px;font-weight:500;color:var(--label2);letter-spacing:-.08px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;}
+.meter-label span{font-size:13px;font-weight:600;color:var(--label);}
+.meter-bar{height:8px;background:var(--fill2);border-radius:4px;overflow:hidden;}
+.meter-fill{height:100%;border-radius:4px;transition:width .8s cubic-bezier(.4,0,.2,1);}
+.sun-card{background:var(--bg2);border-radius:var(--r-lg);padding:14px 16px;margin-bottom:12px;display:flex;align-items:center;gap:12px;transition:background .3s;}
+.sun-icon-wrap{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.sun-low{background:rgba(255,149,0,.10);}
+.sun-med{background:rgba(255,204,0,.12);}
+.sun-high{background:rgba(255,232,0,.12);}
+.sun-label{font-size:15px;font-weight:600;color:var(--label);letter-spacing:-.24px;}
+.sun-desc{font-size:13px;color:var(--label2);margin-top:2px;letter-spacing:-.08px;}
+
+/* ── Empty state ─────────────────────────────────────────────────────────── */
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:64px 32px;text-align:center;gap:8px;}
+.empty-icon{font-size:56px;margin-bottom:8px;}
+.empty-title{font-size:20px;font-weight:600;color:var(--label);}
+.empty-sub{font-size:15px;color:var(--label2);line-height:22px;}
+.empty-cta{margin-top:16px;background:var(--g);color:#fff;border:none;border-radius:var(--r-pill);padding:0 24px;height:44px;font-size:17px;font-weight:600;cursor:pointer;transition:opacity .15s;}
+.empty-cta:active{opacity:.8;}
+
+/* ── Loading ─────────────────────────────────────────────────────────────── */
+.loading-row{display:flex;align-items:center;gap:10px;padding:4px 0;}
+.spinner{width:18px;height:18px;border:2px solid var(--fill2);border-top-color:var(--g);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:14px;color:var(--label2);}
+.divider{height:.5px;background:var(--sep);margin:0 0 12px;}
+</style>
+</head>
+<body data-theme="light">
+
+<!-- Status Bar -->
+<div class="status-bar">
+  <span class="status-time" id="clock">9:41</span>
+  <div class="status-icons">
+    <svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="3" width="3" height="9" rx="1"/><rect x="4.5" y="2" width="3" height="10" rx="1"/><rect x="9" y="0" width="3" height="12" rx="1"/><rect x="13.5" y="0" width="3" height="12" rx="1" opacity=".3"/></svg>
+    <svg width="16" height="12" viewBox="0 0 16 12"><path d="M8 2.4C10.3 2.4 12.3 3.4 13.7 5L15.5 3.2C13.6 1.2 11 0 8 0S2.4 1.2 0.5 3.2L2.3 5C3.7 3.4 5.7 2.4 8 2.4Z"/><path d="M8 5.6C9.5 5.6 10.9 6.2 11.9 7.3L13.7 5.5C12.2 3.9 10.2 3 8 3S3.8 3.9 2.3 5.5L4.1 7.3C5.1 6.2 6.5 5.6 8 5.6Z" opacity=".7"/><circle cx="8" cy="10" r="2"/></svg>
+    <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="22" height="10" rx="3" stroke="var(--label)" stroke-width="1" fill="none"/><rect x="23" y="4" width="2" height="4" rx="1" fill="var(--label)" opacity=".4"/><rect x="1.5" y="2.5" width="16" height="7" rx="2" fill="var(--g)"/></svg>
+  </div>
+</div>
+
+<!-- Nav Bar -->
+<div class="nav-bar" id="nav-bar">
+  <div class="nav-row">
+    <div>
+      <div class="nav-large-title" id="nav-title">Verdant</div>
+      <div class="nav-subtitle" id="nav-sub">Your plant care companion</div>
+    </div>
+    <div class="nav-actions">
+      <button class="nav-icon-btn" id="add-btn" title="Add plant">＋</button>
+    </div>
+  </div>
+</div>
+
+<!-- Plants Controls (segment + search) -->
+<div id="plants-controls">
+  <div class="segment-wrap">
+    <div class="segment" id="main-seg">
+      <button class="seg-btn active" data-f="all">All</button>
+      <button class="seg-btn" data-f="potted">🪴 Potted</button>
+      <button class="seg-btn" data-f="garden">🏡 Garden</button>
+    </div>
+  </div>
+  <div class="search-wrap">
+    <div class="search-bar">
+      <span style="font-size:15px;color:var(--label3)">🔍</span>
+      <input type="text" id="search-in" placeholder="Search plants…">
+    </div>
+  </div>
+</div>
+
+<!-- Tab content areas -->
+<div id="tab-plants" class="scroll-content"></div>
+<div id="tab-reminders" class="scroll-content" style="display:none"></div>
+<div id="tab-discover" class="discover-content" style="display:none"></div>
+<div id="tab-settings" class="settings-content" style="display:none"></div>
+
+<!-- Tab Bar -->
+<div class="tab-bar">
+  <button class="tab-item active" data-tab="plants">
+    <span class="tab-icon">🌿</span>
+    <span class="tab-label">Plants</span>
+  </button>
+  <button class="tab-item" data-tab="reminders">
+    <span class="tab-icon">💧</span>
+    <span class="tab-label">Reminders</span>
+    <div class="tab-badge" id="rem-badge" style="display:none">0</div>
+  </button>
+  <button class="tab-item" data-tab="discover">
+    <span class="tab-icon">🔍</span>
+    <span class="tab-label">Discover</span>
+  </button>
+  <button class="tab-item" data-tab="settings">
+    <span class="tab-icon">⚙️</span>
+    <span class="tab-label">Settings</span>
+  </button>
+</div>
+
+<!-- Add Plant Sheet -->
+<div class="sheet-overlay" id="add-sheet">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-hdr">
+      <button class="sheet-cancel" id="sheet-cancel">Cancel</button>
+      <span class="sheet-title">Add Plant</span>
+      <button class="sheet-confirm" id="sheet-add">Add</button>
+    </div>
+    <div class="sheet-sec">
+      <div class="sheet-lbl">Type</div>
+      <div class="mode-grid">
+        <button class="mode-btn sel" id="mode-potted"><span class="mode-icon">🪴</span><span class="mode-lbl">Potted</span></button>
+        <button class="mode-btn" id="mode-garden"><span class="mode-icon">🏡</span><span class="mode-lbl">Garden</span></button>
+      </div>
+      <div class="garden-tip" id="garden-tip">
+        <span>🌱</span>
+        <span class="garden-tip-text">Garden mode includes outdoor conditions, spacing & companion planting.</span>
+      </div>
+    </div>
+    <div class="sheet-sec" style="margin-top:12px;">
+      <div class="sheet-lbl">Icon</div>
+      <div class="emoji-row" id="emoji-picker">
+        <button class="emoji-btn sel" data-e="🪴">🪴</button>
+        <button class="emoji-btn" data-e="🌿">🌿</button>
+        <button class="emoji-btn" data-e="🌱">🌱</button>
+        <button class="emoji-btn" data-e="🌵">🌵</button>
+        <button class="emoji-btn" data-e="🌸">🌸</button>
+        <button class="emoji-btn" data-e="🌺">🌺</button>
+        <button class="emoji-btn" data-e="🌻">🌻</button>
+        <button class="emoji-btn" data-e="🌾">🌾</button>
+        <button class="emoji-btn" data-e="🍃">🍃</button>
+        <button class="emoji-btn" data-e="🌳">🌳</button>
+      </div>
+    </div>
+    <div class="sheet-sec" style="margin-top:12px;">
+      <div class="sheet-lbl">Plant Name</div>
+      <input class="ios-field" id="plant-name-in" type="text" placeholder="e.g. Monstera, Cactus, Tulip…">
+    </div>
+    <div id="sheet-loading" style="display:none;padding:14px 20px;align-items:center;gap:10px;">
+      <div class="spinner"></div><span class="loading-text">Generating profile…</span>
+    </div>
+    <div id="sheet-err" style="display:none;padding:6px 20px;font-size:14px;color:var(--red);"></div>
+  </div>
+</div>
+
+<!-- Detail Sheet -->
+<div class="detail-overlay" id="detail-overlay">
+  <div class="detail-sheet" id="detail-sheet">
+    <!-- 3D Viewer rendered here procedurally -->
+    <div class="detail-3d-wrap" id="detail-3d-wrap">
+      <div class="detail-3d-bg" id="detail-3d-bg"></div>
+      <canvas id="detail-canvas"></canvas>
+      <div class="detail-handle-bar"></div>
+      <button class="detail-close" id="detail-close">✕</button>
+      <div class="detail-3d-drag">DRAG TO ROTATE</div>
+    </div>
+    <div class="detail-body">
+      <div class="detail-title-row">
+        <div>
+          <div class="detail-name" id="d-name"></div>
+          <div class="detail-sci" id="d-sci"></div>
+        </div>
+        <button class="water-btn" id="d-water">💧 Log Water</button>
+      </div>
+      <div class="stat-row" id="d-stats"></div>
+      <div class="segment" id="d-seg" style="margin-bottom:16px;">
+        <button class="seg-btn active" data-dt="care">Care</button>
+        <button class="seg-btn" data-dt="facts">Facts</button>
+        <button class="seg-btn" data-dt="garden" id="d-garden-tab" style="display:none">Garden</button>
+        <button class="seg-btn" data-dt="companions" id="d-comp-tab" style="display:none">Companions</button>
+      </div>
+      <div id="d-content"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════════════
+// 3D ENGINE — Optimized for procedural on-demand generation
+// ══════════════════════════════════════════════════════════════════════════
+const T = THREE;
+
+// ── Material helpers (re-use to reduce GPU objects) ───────────────────────
+function mat(c,r=.78){return new T.MeshStandardMaterial({color:c,roughness:r});}
+function dsm(c,r=.74){return new T.MeshStandardMaterial({color:c,roughness:r,side:T.DoubleSide});}
+
+// ── Shared base builders (reduced segment counts for perf) ────────────────
+function buildPot(g){
+  // Terracotta pot: fewer segments for thumbnail perf
+  const pm=mat(0xe8836a,.82),rm=mat(0xd4694e,.78),sm=mat(0x2a1a0e,1),dm=mat(0xf5f0e8,.88);
+  const p=new T.Mesh(new T.CylinderGeometry(.58,.42,.88,14),pm);p.position.y=-1.3;p.castShadow=true;g.add(p);
+  g.add(Object.assign(new T.Mesh(new T.TorusGeometry(.60,.07,7,20),rm),{position:new T.Vector3(0,-.88,0)}));
+  g.add(Object.assign(new T.Mesh(new T.CylinderGeometry(.54,.54,.07,14),sm),{position:new T.Vector3(0,-.90,0)}));
+  for(let i=0;i<7;i++){const a=(i/7)*Math.PI*2,d=new T.Mesh(new T.SphereGeometry(.04,5,4),dm);d.position.set(Math.cos(a)*.58,-.88,Math.sin(a)*.58);g.add(d);}
+}
+function buildGround(g){
+  g.add(Object.assign(new T.Mesh(new T.CylinderGeometry(1.1,1.1,.12,18),mat(0x4a3728,1)),{position:new T.Vector3(0,-1.42,0)}));
+  g.add(Object.assign(new T.Mesh(new T.TorusGeometry(1.05,.10,5,18),mat(0x3a7d44,.9)),{position:new T.Vector3(0,-1.35,0)}));
+}
+
+// ── CACTUS ────────────────────────────────────────────────────────────────
+function buildCactus(g,gm){
+  gm?buildGround(g):buildPot(g);
+  const lg=mat(0x4ab54a,.72),dg=mat(0x2d7a2d,.80),sp=mat(0x1a1a1a,.90);
+  function col(rx,h,x,y,z,rz=0){
+    const c=new T.Group();
+    c.add(Object.assign(new T.Mesh(new T.CylinderGeometry(rx*.88,rx,h,9),lg),{castShadow:true}));
+    const dome=new T.Mesh(new T.SphereGeometry(rx*.9,9,7,0,Math.PI*2,0,Math.PI/2),lg);dome.position.y=h/2;c.add(dome);
+    c.add(Object.assign(new T.Mesh(new T.CylinderGeometry(rx*.27,rx*.30,h,5),dg),{position:new T.Vector3(-rx*.65,0,0)}));
+    const rows=Math.floor(h/.30);
+    for(let r=0;r<rows;r++){
+      const yp=-h/2+.18+r*.30;
+      for(let s=0;s<5;s++){
+        const a=(s/5)*Math.PI*2+r*.5;
+        [-0.06,.06].forEach(off=>{
+          const spine=new T.Mesh(new T.CylinderGeometry(.011,.007,.15,4),sp);
+          spine.position.set(Math.cos(a+off)*(rx+.01),yp,Math.sin(a+off)*(rx+.01));
+          spine.rotation.z=Math.cos(a+off)*1.4;spine.rotation.x=Math.sin(a+off)*1.4;
+          c.add(spine);
+        });
+      }
+    }
+    c.position.set(x,y,z);c.rotation.z=rz;g.add(c);
+  }
+  col(.30,1.72,0,-.04,0);col(.22,1.12,-.48,.13,.08,.18);col(.19,.82,.42,.0,-.06,-.12);
+}
+
+// ── SUCCULENT ─────────────────────────────────────────────────────────────
+function buildSucculent(g,gm){
+  gm?buildGround(g):buildPot(g);
+  const cols=[mat(0x3a7a3a,.68),mat(0x2a5a2a,.74),mat(0x4a8a4a,.62)];
+  [{count:6,radius:.56,len:.54,w:.23,tilt:.88,yb:-.88},{count:7,radius:.36,len:.42,w:.18,tilt:.55,yb:-.82},{count:5,radius:.18,len:.32,w:.15,tilt:.27,yb:-.77}].forEach((ring,ri)=>{
+    for(let i=0;i<ring.count;i++){
+      const a=(i/ring.count)*Math.PI*2+ri*.3,ls=new T.Shape();
+      ls.moveTo(-ring.w/2,0);ls.bezierCurveTo(-ring.w/2,ring.len*.4,-ring.w*.35,ring.len*.85,0,ring.len);ls.bezierCurveTo(ring.w*.35,ring.len*.85,ring.w/2,ring.len*.4,ring.w/2,0);ls.closePath();
+      // Simplified extrude for perf
+      const lf=new T.Mesh(new T.ExtrudeGeometry(ls,{depth:.055,bevelEnabled:false}),cols[(ri+i)%cols.length]);
+      lf.position.set(Math.cos(a)*ring.radius,ring.yb,Math.sin(a)*ring.radius);lf.rotation.y=-a+Math.PI/2;lf.rotation.x=ring.tilt;lf.castShadow=true;g.add(lf);
+    }
+  });
+  g.add(Object.assign(new T.Mesh(new T.SphereGeometry(.10,7,6),cols[0]),{position:new T.Vector3(0,-.72,0)}));
+}
+
+// ── TULIP ─────────────────────────────────────────────────────────────────
+function buildTulip(g,gm){
+  gm?buildGround(g):buildPot(g);
+  const stM=mat(0x2d6a2d,.80),lfM=dsm(0x2d6a2d,.75),outer=dsm(0xe8614a,.50),inner=dsm(0x9b1b30,.50),hi=dsm(0xf0a882,.50);
+  const stem=new T.Mesh(new T.CylinderGeometry(.045,.062,1.58,7),stM);stem.position.set(.05,-.34,0);stem.rotation.z=-.06;g.add(stem);
+  function leaf(s){const sh=new T.Shape();sh.moveTo(0,0);sh.bezierCurveTo(s*.19,.36,s*.23,.66,s*.06,.96);sh.bezierCurveTo(s*-.06,.66,s*-.07,.30,0,0);const m=new T.Mesh(new T.ShapeGeometry(sh,8),lfM);m.position.set(s*.09,-.41,0);m.rotation.x=.15;m.rotation.z=s*.46;g.add(m);}
+  leaf(-1);leaf(1);
+  const bY=.68;
+  for(let i=0;i<3;i++){const a=(i/3)*Math.PI*2,ps=new T.Shape();ps.moveTo(0,-.28);ps.bezierCurveTo(.14,-.10,.19,.21,.05,.43);ps.bezierCurveTo(-.05,.43,-.14,.10,0,-.28);const p=new T.Mesh(new T.ShapeGeometry(ps,7),i===2?hi:outer);p.position.set(Math.sin(a)*.12,bY,Math.cos(a)*.12);p.rotation.y=a;p.rotation.x=-.25+i*.05;g.add(p);}
+  for(let i=0;i<3;i++){const a=(i/3)*Math.PI*2+.5,ps=new T.Shape();ps.moveTo(0,-.22);ps.bezierCurveTo(.10,.01,.12,.23,.03,.37);ps.bezierCurveTo(-.03,.37,-.10,.06,0,-.22);const p=new T.Mesh(new T.ShapeGeometry(ps,7),inner);p.position.set(Math.sin(a)*.07,bY+.02,Math.cos(a)*.07);p.rotation.y=a;p.rotation.x=-.15;g.add(p);}
+}
+
+// ── SUNFLOWER ─────────────────────────────────────────────────────────────
+function buildSunflower(g,gm){
+  gm?buildGround(g):buildPot(g);
+  const stM=mat(0x2d6a2d,.80),lfM=dsm(0x2d6a2d,.75),discM=mat(0x3d1a0a,.90),seedM=mat(0x5a2a12,.85),petM=dsm(0xf5d03a,.58);
+  const stem=new T.Mesh(new T.CylinderGeometry(.05,.076,2.12,7),stM);stem.position.set(.04,-.04,0);stem.rotation.z=-.05;g.add(stem);
+  [[-0.88,-1,1],[.84,-.54,-1],[-.74,-.14,1],[.69,.21,-1]].forEach(([y,xo,side])=>{
+    const ls=new T.Shape();ls.moveTo(0,0);ls.bezierCurveTo(side*.12,.13,side*.19,.29,side*.04,.43);ls.bezierCurveTo(side*-.04,.29,side*-.09,.11,0,0);
+    const lf=new T.Mesh(new T.ShapeGeometry(ls,7),lfM);lf.position.set(xo*.22,y,0);lf.rotation.z=side*.55;lf.rotation.x=.20;g.add(lf);
+  });
+  const hy=.98;
+  g.add(Object.assign(new T.Mesh(new T.CircleGeometry(.31,18),discM),{position:new T.Vector3(.04,hy,.01),rotation:new T.Euler(-.10,0,0)}));
+  for(let i=0;i<11;i++){const a=(i/11)*Math.PI*2,r=.12+(i%3)*.07,sd=new T.Mesh(new T.SphereGeometry(.033,5,4),seedM);sd.position.set(.04+Math.cos(a)*r,hy+.04,Math.sin(a)*r*.9);g.add(sd);}
+  for(let i=0;i<14;i++){const a=(i/14)*Math.PI*2,ps=new T.Shape();ps.moveTo(0,0);ps.bezierCurveTo(.09,.08,.10,.27,0,.37);ps.bezierCurveTo(-.10,.27,-.09,.08,0,0);const pt=new T.Mesh(new T.ShapeGeometry(ps,7),petM);pt.position.set(.04+Math.cos(a)*.32,hy,Math.sin(a)*.32);pt.rotation.y=-a;pt.rotation.x=-.08;g.add(pt);}
+}
+
+// ── ROSE BUSH ─────────────────────────────────────────────────────────────
+function buildRoseBush(g,gm){
+  gm?buildGround(g):buildPot(g);
+  const lDk=mat(0x2a6a2a,.80),lLt=mat(0x3a8a3a,.74),rDk=mat(0x8b1a1a,.55),rLt=mat(0xb52020,.50);
+  // Foliage mound
+  for(let i=0;i<12;i++){
+    const a=(i/12)*Math.PI*2,r=.16+(i*.037+.12)%0.45;
+    const ls=new T.Shape();ls.moveTo(0,0);ls.bezierCurveTo(.14,.13,.19,.33,0,.41);ls.bezierCurveTo(-.19,.33,-.14,.13,0,0);
+    const lf=new T.Mesh(new T.ShapeGeometry(ls,6),i%3===0?lLt:lDk);
+    lf.scale.set(.8+i*.03,.8+i*.025,1);lf.position.set(Math.cos(a)*r,-.88+(i*.028)%0.38,Math.sin(a)*r);lf.rotation.y=a;lf.rotation.x=-(0.3+(i*.04)%0.5);g.add(lf);
+  }
+  // Rose blooms
+  function rose(x,y,z,sc=1){
+    const rg=new T.Group();
+    [{count:5,r:0,h:0,tilt:0},{count:6,r:.12,h:-.03,tilt:.55},{count:7,r:.22,h:-.06,tilt:.92}].forEach((ring,ri)=>{
+      for(let i=0;i<ring.count;i++){
+        const a=(i/ring.count)*Math.PI*2+ri*.4,ps=new T.Shape();ps.moveTo(0,-.08);ps.bezierCurveTo(.076,-.02,.09,.10,.02,.19);ps.bezierCurveTo(-.02,.19,-.076,.06,0,-.08);
+        const pt=new T.Mesh(new T.ShapeGeometry(ps,6),ri===0?rLt:rDk);pt.position.set(Math.cos(a)*ring.r,ring.h,Math.sin(a)*ring.r);pt.rotation.y=a;pt.rotation.x=ring.tilt;rg.add(pt);
+      }
+    });
+    rg.scale.setScalar(sc);rg.position.set(x,y,z);g.add(rg);
+  }
+  rose(0,-.44,0,1.10);rose(-.38,-.56,.18,.90);rose(.40,-.52,.10,.95);rose(-.18,-.50,-.38,.88);rose(.22,-.62,-.30,.85);
+}
+
+// ── SNAKE PLANT ───────────────────────────────────────────────────────────
+function buildSnakePlant(g,gm){
+  gm?buildGround(g):buildPot(g);
+  const dkM=dsm(0x2d6a3f,.70),mdM=dsm(0x4a8a5a,.65),edM=dsm(0xe8dfa0,.60);
+  function blade(h,lx,lz,ry,zo=0){
+    const b=new T.Group(),w=.18;
+    const bs=new T.Shape();bs.moveTo(-w,0);bs.lineTo(-w*.14,h);bs.lineTo(w*.14,h);bs.lineTo(w,0);bs.closePath();
+    b.add(new T.Mesh(new T.ExtrudeGeometry(bs,{depth:.065,bevelEnabled:false}),mdM));
+    // Simplified stripe bands (fewer)
+    const bc=Math.floor(h/.28);
+    for(let i=0;i<bc;i++){
+      const yb=.12+i*.28,fr=yb/h,wy=w*(1-fr*.85);
+      const bsh=new T.Shape();bsh.moveTo(-wy,yb);bsh.lineTo(-wy*.14,yb+.08);bsh.lineTo(wy*.14,yb+.08);bsh.lineTo(wy,yb);bsh.closePath();
+      const band=new T.Mesh(new T.ShapeGeometry(bsh,3),i%2===0?dkM:mdM);band.position.z=.068;b.add(band);
+    }
+    [-1,1].forEach(side=>{
+      const ss=new T.Shape();ss.moveTo(side*w,0);ss.lineTo(side*(w-.042),0);ss.lineTo(0,h);ss.lineTo(side*w*.13,h);ss.closePath();
+      const stripe=new T.Mesh(new T.ShapeGeometry(ss,3),edM);stripe.position.z=.072;b.add(stripe);
+    });
+    b.rotation.x=lx;b.rotation.z=lz;b.rotation.y=ry;b.position.set(0,-.90,zo);g.add(b);
+  }
+  blade(1.70,-.05,-.08,.00,.00);blade(1.44,-.06,-.33,.90,.05);blade(1.54,-.05,.29,-.85,.05);blade(1.22,-.08,-.53,1.80,.00);blade(1.30,-.07,.49,-1.75,.00);blade(.97,-.10,-.69,2.60,-.05);blade(1.07,-.09,.63,-2.55,-.05);
+}
+
+// ── MONSTERA ──────────────────────────────────────────────────────────────
+function buildMonstera(g,gm){
+  gm?buildGround(g):buildPot(g);
+  const stM=mat(0x2d6a2d,.80),lfM=dsm(0x3a9a3a,.62);
+  g.add(Object.assign(new T.Mesh(new T.CylinderGeometry(.055,.076,1.52,7),stM),{position:new T.Vector3(0,-.20,0),rotation:new T.Euler(0,0,.05)}));
+  const spGeo=new T.CylinderGeometry(.030,.040,.36,5);
+  g.add(Object.assign(new T.Mesh(spGeo,stM),{position:new T.Vector3(-.12,-.81,.10),rotation:new T.Euler(0,0,-.4)}));
+  const sls=new T.Shape();sls.moveTo(0,0);sls.bezierCurveTo(.13,.07,.17,.23,0,.29);sls.bezierCurveTo(-.17,.23,-.13,.07,0,0);
+  g.add(Object.assign(new T.Mesh(new T.ShapeGeometry(sls,5),lfM),{position:new T.Vector3(-.12,-.59,.10),rotation:new T.Euler(0,0,-1.1)}));
+  function mLeaf(px,py,pz,ry,rx,rz,sc=1){
+    g.add(Object.assign(new T.Mesh(new T.CylinderGeometry(.028,.036,.56,5),stM),{position:new T.Vector3(px*.35,py-.23,pz*.35),rotation:new T.Euler(rx*.4,0,rz*.7)}));
+    const ls=new T.Shape();ls.moveTo(0,-.43);ls.bezierCurveTo(.47,-.43,.73,.01,.69,.39);ls.bezierCurveTo(.63,.73,.29,.89,0,.79);ls.bezierCurveTo(-.29,.89,-.63,.73,-.69,.39);ls.bezierCurveTo(-.73,.01,-.47,-.43,0,-.43);
+    // Fenestration holes
+    [[.31,.19,.18,.33],[-.31,.19,.18,.33],[.37,-.07,.14,.26],[-.37,-.07,.14,.26],[.13,.53,.13,.23],[-.13,.53,.13,.23]].forEach(([hx,hy,hw,hh])=>{const h=new T.Path();h.ellipse(hx,hy,hw,hh,0,Math.PI*2,false);ls.holes.push(h);});
+    const lf=new T.Mesh(new T.ShapeGeometry(ls,12),lfM);lf.scale.setScalar(sc);lf.position.set(px,py,pz);lf.rotation.y=ry;lf.rotation.x=rx;lf.rotation.z=rz;lf.castShadow=true;g.add(lf);
+  }
+  mLeaf(-.55,.23,.10,.30,-.28,-.65,.96);mLeaf(.52,.31,-.05,-.30,-.22,.58,.88);mLeaf(.08,.73,.12,.10,-.56,.08,.80);
+}
+
+// ── POTHOS ────────────────────────────────────────────────────────────────
+function buildPothos(g,gm){
+  gm?buildGround(g):buildPot(g);
+  const stM=mat(0x2a5a2a,.85),lfM=dsm(0x3aaa3a,.65),lfD=dsm(0x2a8a2a,.70);
+  function heart(){
+    const ls=new T.Shape();ls.moveTo(0,-.22);ls.bezierCurveTo(.22,-.22,.32,.08,.22,.24);ls.bezierCurveTo(.12,.38,0,.40,0,.38);ls.bezierCurveTo(0,.40,-.12,.38,-.22,.24);ls.bezierCurveTo(-.32,.08,-.22,-.22,0,-.22);
+    return new T.ShapeGeometry(ls,8);
+  }
+  function vine(side,n=5){
+    for(let i=0;i<n;i++){
+      const t=i/(n-1),x=side*(.15+t*1.06),y=-.62+Math.sin(t*Math.PI*.8)*.35-t*.23,z=(i*.137-.34)*.18;
+      if(i<n-1){
+        const nx=side*(.15+(i+1)/(n-1)*1.06),ny=-.62+Math.sin(((i+1)/(n-1))*Math.PI*.8)*.35-((i+1)/(n-1))*.23;
+        const mid=new T.Vector3((x+nx)/2,(y+ny)/2,z),len=Math.sqrt((nx-x)**2+(ny-y)**2)+.02;
+        const seg=new T.Mesh(new T.CylinderGeometry(.022,.028,len,5),stM);seg.position.copy(mid);seg.rotation.z=Math.atan2(ny-y,nx-x)-Math.PI/2;g.add(seg);
+      }
+      const lf=new T.Mesh(heart(),i%2===0?lfM:lfD);lf.scale.setScalar(.55+t*.42);lf.position.set(x,y+.13,z);lf.rotation.y=side>0?-.4-t*.3:.4+t*.3;lf.rotation.x=-.3;g.add(lf);
+    }
+  }
+  for(let i=0;i<4;i++){const a=(i/4)*Math.PI*2,lf=new T.Mesh(heart(),lfM);lf.scale.setScalar(.52);lf.position.set(Math.cos(a)*.18,-.54+i*.10,Math.sin(a)*.18);lf.rotation.y=a;lf.rotation.x=-.5;g.add(lf);}
+  vine(-1,5);vine(1,5);vine(-.7,4);vine(.7,4);
+}
+
+// ── Builder registry ──────────────────────────────────────────────────────
+const BUILDERS={cactus:buildCactus,succulent:buildSucculent,tulip:buildTulip,sunflower:buildSunflower,rosebush:buildRoseBush,snakeplant:buildSnakePlant,monstera:buildMonstera,pothos:buildPothos};
+
+function classifyPlant(name='',cat=''){
+  const t=(name+' '+cat).toLowerCase();
+  if(t.includes('tulip'))return 'tulip';
+  if(t.includes('sunflower'))return 'sunflower';
+  if(t.includes('rose'))return 'rosebush';
+  if(t.includes('monstera')||t.includes('tropical')||t.includes('palm')||t.includes('banana'))return 'monstera';
+  if(t.includes('pothos')||t.includes('philodendron')||t.includes('trailing'))return 'pothos';
+  if(t.includes('snake')||t.includes('dracaena')||t.includes('sansevieria')||t.includes('tall'))return 'snakeplant';
+  if(t.includes('succulent')||t.includes('echeveria')||t.includes('jade')||t.includes('aloe'))return 'succulent';
+  if(t.includes('cactus')||t.includes('cacti'))return 'cactus';
+  if(t.includes('flower')||t.includes('orchid')||t.includes('daisy'))return 'tulip';
+  if(t.includes('bush')||t.includes('lavender')||t.includes('herb')||t.includes('shrub'))return 'rosebush';
+  return 'pothos';
+}
+
+// ── Scene factory (shared setup) ──────────────────────────────────────────
+function makeScene(canvas,w,h){
+  const renderer=new T.WebGLRenderer({canvas,antialias:true,alpha:true});
+  renderer.setSize(w,h,false);renderer.setPixelRatio(Math.min(window.devicePixelRatio,1.5));
+  renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;
+  const scene=new T.Scene(),camera=new T.PerspectiveCamera(42,w/h,.1,100);
+  camera.position.set(0,.3,4.8);
+  scene.add(new T.AmbientLight(0xd4f5d4,.75));
+  const sun=new T.DirectionalLight(0xfff8e7,1.5);sun.position.set(3,5,4);sun.castShadow=true;scene.add(sun);
+  scene.add(Object.assign(new T.DirectionalLight(0xa8d5ff,.35),{position:new T.Vector3(-3,2,-2)}));
+  const floor=new T.Mesh(new T.CircleGeometry(2.5,24),new T.ShadowMaterial({opacity:.12}));floor.rotation.x=-Math.PI/2;floor.position.y=-1.50;floor.receiveShadow=true;scene.add(floor);
+  return{renderer,scene,camera};
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// THUMBNAIL RENDERERS — lazy, spawned only when plant card is visible
+// ══════════════════════════════════════════════════════════════════════════
+const thumbRenders={};
+
+function createThumb(plant){
+  if(thumbRenders[plant.id])return;
+  const wrap=document.getElementById(`thumb-${plant.id}`);
+  if(!wrap)return;
+  const canvas=document.createElement('canvas');
+  const W=wrap.offsetWidth||165,H=140;
+  const pr=Math.min(window.devicePixelRatio,1.5);
+  canvas.width=W*pr;canvas.height=H*pr;
+  canvas.style.cssText=`width:${W}px;height:${H}px;`;
+  wrap.appendChild(canvas);
+  const {renderer:r,scene:s,camera:cam}=makeScene(canvas,canvas.width,canvas.height);
+  cam.position.set(0,.3,5.2);
+  const grp=new T.Group();
+  (BUILDERS[classifyPlant(plant.name,plant.profile?.plantCategory||'')]||buildPothos)(grp,plant.mode==='garden');
+  s.add(grp);
+  let rot=Math.random()*Math.PI*2,active=true;
+  const tick=()=>{rot+=.009;grp.rotation.y=rot;r.render(s,cam);};
+  thumbRenders[plant.id]={r,s,grp,active,raf:null};
+  const loop=()=>{if(!thumbRenders[plant.id]?.active)return;thumbRenders[plant.id].raf=requestAnimationFrame(loop);tick();};
+  loop();
+}
+
+function destroyThumb(id){
+  const t=thumbRenders[id];
+  if(t){t.active=false;cancelAnimationFrame(t.raf);t.r.dispose();delete thumbRenders[id];}
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// DETAIL 3D RENDERER — procedurally built on openDetail()
+// ══════════════════════════════════════════════════════════════════════════
+let detailRenderer=null,detailScene=null,detailCamera=null,detailGroup=null,detailRaf=null;
+let dDragging=false,dPrev={x:0,y:0},dTarget={x:.18,y:0},dCur={x:.18,y:0};
+
+function initDetailRenderer(){
+  const canvas=document.getElementById('detail-canvas');
+  const W=Math.min(393,window.innerWidth),H=300;
+  const pr=Math.min(window.devicePixelRatio,2);
+  canvas.width=W*pr;canvas.height=H*pr;
+  canvas.style.width=W+'px';canvas.style.height='300px';
+  const {renderer,scene,camera}=makeScene(canvas,canvas.width,canvas.height);
+  detailRenderer=renderer;detailScene=scene;detailCamera=camera;
+  // Drag controls
+  const getXY=e=>e.touches?{x:e.touches[0].clientX,y:e.touches[0].clientY}:{x:e.clientX,y:e.clientY};
+  canvas.addEventListener('mousedown',e=>{dDragging=true;dPrev=getXY(e);});
+  canvas.addEventListener('mousemove',e=>{if(!dDragging)return;const c=getXY(e);dTarget.y+=(c.x-dPrev.x)*.013;dTarget.x=Math.max(-.55,Math.min(.75,dTarget.x+(c.y-dPrev.y)*.009));dPrev=c;});
+  canvas.addEventListener('mouseup',()=>dDragging=false);
+  canvas.addEventListener('mouseleave',()=>dDragging=false);
+  canvas.addEventListener('touchstart',e=>{dDragging=true;dPrev=getXY(e);},{passive:true});
+  canvas.addEventListener('touchmove',e=>{if(!dDragging)return;const c=getXY(e);dTarget.y+=(c.x-dPrev.x)*.013;dTarget.x=Math.max(-.55,Math.min(.75,dTarget.x+(c.y-dPrev.y)*.009));dPrev=c;},{passive:true});
+  canvas.addEventListener('touchend',()=>dDragging=false);
+}
+
+/**
+ * loadDetailPlant — procedurally generates 3D model for the tapped plant profile.
+ * Destroys any previous model, builds fresh geometry, starts render loop.
+ */
+function loadDetailPlant(plant){
+  if(!detailRenderer)initDetailRenderer();
+  // Tear down previous model
+  if(detailGroup){detailScene.remove(detailGroup);disposeGroup(detailGroup);detailGroup=null;}
+  cancelAnimationFrame(detailRaf);
+  // Build new model procedurally
+  detailGroup=new T.Group();
+  const key=classifyPlant(plant.name,plant.profile?.plantCategory||'');
+  (BUILDERS[key]||buildPothos)(detailGroup,plant.mode==='garden');
+  detailScene.add(detailGroup);
+  dTarget={x:.18,y:0};dCur={x:.18,y:0};
+  const loop=()=>{
+    detailRaf=requestAnimationFrame(loop);
+    dCur.x+=(dTarget.x-dCur.x)*.08;dCur.y+=(dTarget.y-dCur.y)*.08;
+    detailGroup.rotation.x=dCur.x;detailGroup.rotation.y=dCur.y;
+    if(!dDragging)dTarget.y+=.004;
+    detailRenderer.render(detailScene,detailCamera);
+  };
+  loop();
+}
+
+/** Dispose all geometries/materials in a group to free GPU memory */
+function disposeGroup(group){
+  group.traverse(obj=>{
+    if(obj.geometry)obj.geometry.dispose();
+    if(obj.material){if(Array.isArray(obj.material))obj.material.forEach(m=>m.dispose());else obj.material.dispose();}
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// APP STATE
+// ══════════════════════════════════════════════════════════════════════════
+const SK='verdant-v3';
+let plants=[],activeFilter='all',searchQ='',selEmoji='🪴',selMode='potted';
+let currentTab='plants',detailId=null,detailTab='care';
+let theme=localStorage.getItem('verdant-theme')||'light';
+let remLog=[];
+try{plants=JSON.parse(localStorage.getItem(SK)||'[]');}catch{}
+try{remLog=JSON.parse(localStorage.getItem(SK+'-rem')||'[]');}catch{}
+function save(){try{localStorage.setItem(SK,JSON.stringify(plants));}catch{}}
+function saveRem(){try{localStorage.setItem(SK+'-rem',JSON.stringify(remLog));}catch{}}
+function daysSince(ts){if(!ts)return null;return Math.floor((Date.now()-ts)/86400000);}
+function needsWater(p){const d=daysSince(p.lastWatered);return d!==null&&d>=(p.profile?.waterFrequencyDays||7);}
+function needsSoil(p){if(!p.profile)return false;const log=remLog.filter(r=>r.plantId===p.id&&r.type==='soil').sort((a,b)=>b.doneAt-a.doneAt)[0];return log?Math.floor((Date.now()-log.doneAt)/86400000)>=365:true;}
+const COLORS=['green','sage','terr','gold'];
+function cardColor(id){return COLORS[id%4];}
+
+// ── Water meter ───────────────────────────────────────────────────────────
+function waterMeterHTML(plant){
+  if(!plant.profile)return'';
+  const freq=plant.profile.waterFrequencyDays||7;
+  const d=daysSince(plant.lastWatered);
+  const pct=d===null?0:Math.min(100,Math.round((d/freq)*100));
+  const color=pct>=100?'var(--red)':pct>=75?'var(--amber)':'var(--blue)';
+  const label=pct>=100?'Needs water now':pct>=75?'Water soon':'Hydrated';
+  return`<div class="meter-card">
+    <div class="meter-label">💧 Water Level <span>${label}</span></div>
+    <div class="meter-bar"><div class="meter-fill" style="width:${pct}%;background:${color}"></div></div>
+  </div>`;
+}
+
+// ── Sunlight card ─────────────────────────────────────────────────────────
+function sunlightCardHTML(plant){
+  if(!plant.profile?.sunlight)return'';
+  const s=plant.profile.sunlight.toLowerCase();
+  let icon='☀️',cls='sun-med',label=plant.profile.sunlight,desc='';
+  if(s.includes('low')||s.includes('indirect')||s.includes('shade')){icon='🌤';cls='sun-low';desc='Prefers sheltered spots away from direct rays.';}
+  else if(s.includes('full')||s.includes('direct')||s.includes('bright')){icon='☀️';cls='sun-high';desc='Thrives with maximum daily sunlight exposure.';}
+  else{icon='⛅';cls='sun-med';desc='Happy with moderate to bright indirect light.';}
+  return`<div class="sun-card">
+    <div class="sun-icon-wrap ${cls}">${icon}</div>
+    <div><div class="sun-label">${label}</div><div class="sun-desc">${desc}</div></div>
+  </div>`;
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// RENDER PLANTS TAB
+// ══════════════════════════════════════════════════════════════════════════
+function renderPlants(){
+  Object.keys(thumbRenders).forEach(id=>{if(!plants.find(p=>p.id==id))destroyThumb(id);});
+  let list=plants.filter(p=>activeFilter==='all'||p.mode===activeFilter);
+  if(searchQ)list=list.filter(p=>p.name.toLowerCase().includes(searchQ.toLowerCase()));
+  const wc=plants.filter(needsWater).length;
+  const total=plants.filter(p=>needsWater(p)||needsSoil(p)).length;
+  const rb=document.getElementById('rem-badge');
+  rb.textContent=total;rb.style.display=total>0?'flex':'none';
+  const el=document.getElementById('tab-plants');
+  if(plants.length===0){
+    el.innerHTML=`<div class="empty"><span class="empty-icon">🌱</span><div class="empty-title">No plants yet</div><div class="empty-sub">Add your first plant to start your collection.</div><button class="empty-cta" onclick="openAddSheet()">Add First Plant</button></div>`;
+    return;
+  }
+  let html='';
+  if(wc>0){const ns=plants.filter(needsWater).map(p=>p.name).slice(0,2).join(', ');html+=`<div class="alert-banner"><span class="alert-icon">💧</span><div class="alert-text"><div class="alert-title">${wc} plant${wc>1?'s':''} need watering</div><div class="alert-sub">${ns}${wc>2?' and more…':''}</div></div></div>`;}
+  if(list.length===0){html+=`<div class="empty" style="padding:40px 0"><span class="empty-icon" style="font-size:40px">🔍</span><div class="empty-title" style="font-size:17px">No results</div></div>`;}
+  else{
+    html+=`<div class="plants-grid">`;
+    list.forEach(p=>{
+      const col=cardColor(p.id%4);
+      let badges='';
+      if(needsWater(p))badges+=`<span class="badge b-alert">💧 Thirsty</span>`;
+      else if(p.profile?.waterFrequencyDays)badges+=`<span class="badge b-water">💧 ${p.profile.waterFrequencyDays}d</span>`;
+      if(needsSoil(p)&&p.profile)badges+=`<span class="badge b-soil">🪴 Repot</span>`;
+      if(p.profile?.sunlight)badges+=`<span class="badge b-sun">☀️ ${p.profile.sunlight}</span>`;
+      if(p.mode==='garden')badges+=`<span class="badge b-garden">🏡</span>`;
+      html+=`<div class="plant-card" onclick="openDetail(${p.id})">
+        <div class="plant-thumb ${col}" id="thumb-${p.id}"><div class="plant-thumb-bg ${col}"></div><span class="plant-thumb-emoji" id="emoji-${p.id}">${p.profile?'':p.emoji}</span></div>
+        <button class="card-del" onclick="event.stopPropagation();delPlant(${p.id})">✕</button>
+        <div class="plant-card-body">
+          <div class="plant-card-name">${p.name}</div>
+          ${p.profile?.scientificName?`<div class="plant-card-sci">${p.profile.scientificName}</div>`:(p.profile===null?`<div class="loading-row" style="margin:4px 0"><div class="spinner"></div><span class="loading-text">Loading…</span></div>`:'')}
+          <div class="plant-card-badges">${badges}</div>
+        </div>
+      </div>`;
+    });
+    html+=`</div>`;
+  }
+  el.innerHTML=html;
+  // Lazily spawn thumb renderers after DOM painted
+  requestAnimationFrame(()=>{
+    list.forEach(p=>{
+      if(p.profile&&!thumbRenders[p.id]){
+        // Hide emoji placeholder once 3D loads
+        const emojiEl=document.getElementById(`emoji-${p.id}`);
+        if(emojiEl)emojiEl.style.display='none';
+        createThumb(p);
+      }
+    });
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// DETAIL SHEET — opens and procedurally generates 3D model
+// ══════════════════════════════════════════════════════════════════════════
+function openDetail(id){
+  const p=plants.find(x=>x.id===id);if(!p)return;
+  detailId=id;detailTab='care';
+  const col=cardColor(p.id%4);
+  document.getElementById('detail-3d-bg').className=`detail-3d-bg ${col}`;
+  document.getElementById('d-name').textContent=p.name;
+  document.getElementById('d-sci').textContent=p.profile?.scientificName||'';
+  document.getElementById('d-garden-tab').style.display=p.mode==='garden'?'':'none';
+  document.getElementById('d-comp-tab').style.display=p.mode==='garden'?'':'none';
+  document.querySelectorAll('#d-seg .seg-btn').forEach(b=>b.classList.toggle('active',b.dataset.dt==='care'));
+  renderDStats(p);renderDContent(p);
+  // Procedurally generate 3D model for this plant profile on tap
+  loadDetailPlant(p);
+  document.getElementById('detail-overlay').classList.add('open');
+  document.getElementById('detail-sheet').scrollTop=0;
+}
+
+function renderDStats(p){
+  const pr=p.profile;let html='';
+  if(pr?.waterFrequencyDays)html+=sp('💧','Water',`Every ${pr.waterFrequencyDays}d`);
+  if(pr?.sunlight)html+=sp('☀️','Light',pr.sunlight);
+  if(pr?.difficulty)html+=sp('🌱','Level',pr.difficulty);
+  if(p.mode==='garden'&&pr?.hardinessZone)html+=sp('🗺','Zone',pr.hardinessZone);
+  document.getElementById('d-stats').innerHTML=html;
+}
+function sp(icon,lbl,val){return`<div class="stat-pill"><span class="stat-pill-icon">${icon}</span><div><div class="stat-pill-lbl">${lbl}</div><div class="stat-pill-val">${val}</div></div></div>`;}
+
+function renderDContent(p){
+  const pr=p.profile,el=document.getElementById('d-content');
+  if(!pr){el.innerHTML=`<div class="loading-row" style="padding:16px 0"><div class="spinner"></div><span class="loading-text">Generating profile…</span></div>`;return;}
+  const tab=detailTab;let html='';
+  if(tab==='care'){
+    // About summary
+    if(pr.description)html+=`<div class="tip-banner"><div class="tip-text">📖 ${pr.description}</div></div>`;
+    // Water meter
+    html+=waterMeterHTML(p);
+    // Sunlight card
+    html+=sunlightCardHTML(p);
+    // Care tips
+    html+=`<div class="sec-hdr" style="margin-top:4px">Care Tips</div>`;
+    html+=`<div class="list-group">`;
+    if(pr.wateringInstructions)html+=lr('💧','Watering',pr.wateringInstructions);
+    if(pr.sunlightInstructions)html+=lr('☀️','Sunlight',pr.sunlightInstructions);
+    if(pr.temperature)html+=lr('🌡','Temperature',pr.temperature);
+    if(pr.soil)html+=lr('🪨','Soil',pr.soil);
+    if(pr.pruning)html+=lr('✂️','Pruning',pr.pruning);
+    if(pr.fertilizingSchedule)html+=lr('🌿','Fertilizing',pr.fertilizingSchedule);
+    html+=`</div>`;
+  }else if(tab==='facts'){
+    if(pr.funFacts?.length){pr.funFacts.forEach((f,i)=>{html+=`<div class="fact-card"><div class="fact-num">${i+1}</div><div class="fact-text">${f}</div></div>`;});}
+    else html+=`<div class="empty" style="padding:24px 0"><span class="empty-icon" style="font-size:36px">📖</span><div class="empty-sub">No fun facts available.</div></div>`;
+  }else if(tab==='garden'){
+    html+=`<div class="list-group">`;
+    if(pr.gardenConditions)html+=lr('🏡','Garden Conditions',pr.gardenConditions);
+    if(pr.idealSoilPH)html+=lr('⚗️','Soil pH',pr.idealSoilPH);
+    if(pr.idealBedSpacing)html+=lr('📐','Bed Spacing',pr.idealBedSpacing);
+    if(pr.hardinessZone)html+=lr('🗺','Hardiness Zone',pr.hardinessZone);
+    if(pr.fertilizingSchedule)html+=lr('🌿','Fertilizing',pr.fertilizingSchedule);
+    html+=`</div>`;
+  }else if(tab==='companions'){
+    if(pr.companionPlants?.length){html+=`<div class="sec-hdr" style="margin-top:0">Great companions</div>`;pr.companionPlants.forEach(c=>{html+=`<div class="companion-card"><div class="companion-row"><div class="c-dot" style="background:var(--g)"></div><div class="companion-name">${c.name}</div></div><div class="companion-reason">${c.reason}</div></div>`;});}
+    if(pr.incompatiblePlants?.length){html+=`<div class="sec-hdr">Avoid planting with</div>`;pr.incompatiblePlants.forEach(c=>{html+=`<div class="companion-card"><div class="companion-row"><div class="c-dot" style="background:var(--red)"></div><div class="companion-name">${c.name}</div></div><div class="companion-reason">${c.reason}</div></div>`;});}
+  }
+  el.innerHTML=html;
+}
+function lr(icon,label,val){return`<div class="list-row"><span class="row-icon">${icon}</span><div class="row-body"><div class="row-label">${label}</div><div class="row-val">${val}</div></div></div>`;}
+
+// ── Detail controls ───────────────────────────────────────────────────────
+document.getElementById('d-seg').addEventListener('click',e=>{
+  const btn=e.target.closest('.seg-btn');if(!btn)return;
+  detailTab=btn.dataset.dt;
+  document.querySelectorAll('#d-seg .seg-btn').forEach(b=>b.classList.toggle('active',b===btn));
+  const p=plants.find(x=>x.id===detailId);if(p)renderDContent(p);
+});
+
+document.getElementById('detail-close').addEventListener('click',closeDetail);
+document.getElementById('detail-overlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeDetail();});
+
+function closeDetail(){
+  document.getElementById('detail-overlay').classList.remove('open');
+  cancelAnimationFrame(detailRaf);
+  // Free GPU memory when closing
+  if(detailGroup){disposeGroup(detailGroup);detailScene.remove(detailGroup);detailGroup=null;}
+}
+
+document.getElementById('d-water').addEventListener('click',()=>{
+  if(!detailId)return;
+  const p=plants.find(x=>x.id===detailId);if(!p)return;
+  p.lastWatered=Date.now();save();
+  renderDStats(p);renderDContent(p);renderPlants();renderReminders();
+});
+
+// ══════════════════════════════════════════════════════════════════════════
+// REMINDERS TAB
+// ══════════════════════════════════════════════════════════════════════════
+function renderReminders(){
+  const el=document.getElementById('tab-reminders');
+  if(plants.length===0){el.innerHTML=`<div class="empty"><span class="empty-icon">💧</span><div class="empty-title">No reminders</div><div class="empty-sub">Add plants to start tracking care schedules.</div></div>`;return;}
+  let html='';
+  // Sort by urgency: plants needing water first
+  const withProfile=plants.filter(p=>p.profile);
+  const sorted=[...withProfile].sort((a,b)=>{const da=daysSince(a.lastWatered)||0,db=daysSince(b.lastWatered)||0,fa=a.profile.waterFrequencyDays||7,fb=b.profile.waterFrequencyDays||7;return(db/fb)-(da/fa);});
+  html+=`<div class="sec-hdr" style="margin-top:0">💧 Watering Schedule</div>`;
+  sorted.forEach(p=>{
+    const freq=p.profile.waterFrequencyDays||7,d=daysSince(p.lastWatered);
+    const pct=d===null?0:Math.min(100,Math.round((d/freq)*100));
+    const urgent=needsWater(p),soon=!urgent&&d!==null&&d>=(freq-2);
+    const urgClass=urgent?'urg-now':soon?'urg-soon':'urg-ok',urgText=urgent?'Water now':soon?'Soon':'On track';
+    html+=remCard(p,'water','💧','Watering',`Every ${freq} days`,
+      d===null?'Never watered — tap to log':d===0?'Watered today ✓':`Last watered ${d} day${d!==1?'s':''} ago`,
+      pct,'var(--blue)',urgClass,urgText,`logWater(${p.id})`,'Log Watered',p.profile.wateringInstructions||'');
+  });
+  html+=`<div class="sec-hdr">🌿 Care Suggestions</div>`;
+  sorted.forEach(p=>{
+    const tip=p.profile.seasonalTip||p.profile.pruning||'Check for pests, dust leaves, and inspect roots.';
+    html+=`<div class="reminder-card">
+      <div class="rem-header"><div class="rem-icon care">🌿</div><div><div class="rem-plant">${p.name}</div><div class="rem-type">Care Suggestion</div></div><span class="rem-urgency urg-ok">Tip</span></div>
+      <div class="rem-body"><div class="rem-desc">${tip}</div><div class="rem-actions">
+        <button class="rem-btn btn-secondary" onclick="getCareAI(${p.id},this)">✨ AI Tip</button>
+        <button class="rem-btn btn-secondary" onclick="openDetail(${p.id})">Profile</button>
+      </div></div></div>`;
+  });
+  el.innerHTML=html;
+}
+function remCard(p,type,icon,title,subtitle,desc,pct,barColor,urgClass,urgText,action,actionLabel,tip){
+  return`<div class="reminder-card">
+    <div class="rem-header"><div class="rem-icon ${type}">${icon}</div><div><div class="rem-plant">${p.name}</div><div class="rem-type">${subtitle}</div></div><span class="rem-urgency ${urgClass}">${urgText}</span></div>
+    <div class="rem-body">
+      <div class="rem-desc">${desc}</div>
+      <div class="rem-progress"><div class="rem-progress-fill" style="width:${pct}%;background:${barColor}"></div></div>
+      ${tip?`<div class="rem-desc" style="font-size:13px;margin-top:2px;margin-bottom:8px">${tip}</div>`:''}
+      <div class="rem-actions"><button class="rem-btn btn-primary" onclick="${action}">${actionLabel}</button><button class="rem-btn btn-secondary" onclick="openDetail(${p.id})">Details</button></div>
+    </div></div>`;
+}
+function logWater(id){const p=plants.find(x=>x.id===id);if(!p)return;p.lastWatered=Date.now();save();renderPlants();renderReminders();}
+async function getCareAI(id,btn){
+  const p=plants.find(x=>x.id===id);if(!p||!p.profile)return;
+  btn.textContent='…';btn.disabled=true;
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:200,messages:[{role:'user',content:`1-2 sentence practical care tip for ${p.name} (${p.profile.scientificName||''}). Current season. Plain text, no bullets.`}]})});
+    const data=await res.json();
+    p.profile.seasonalTip=data.content.map(b=>b.text||'').join('').trim();save();renderReminders();
+  }catch{btn.textContent='✨ AI Tip';btn.disabled=false;}
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// DISCOVER TAB
+// ══════════════════════════════════════════════════════════════════════════
+let scanResult=null,scanActive=false;
+function renderDiscover(){
+  const el=document.getElementById('tab-discover');
+  const popularPlants=[
+    {e:'🌿',n:'Monstera',t:'Tropical'},{e:'🐍',n:'Snake Plant',t:'Easy care'},
+    {e:'🌵',n:'Cactus',t:'Desert'},{e:'🌿',n:'Pothos',t:'Trailing'},
+    {e:'🌱',n:'Peace Lily',t:'Flowering'},{e:'🌿',n:'Fiddle Leaf Fig',t:'Statement'},
+    {e:'🌺',n:'Orchid',t:'Flowering'},{e:'🌿',n:'ZZ Plant',t:'Low light'},
+    {e:'🌿',n:'Spider Plant',t:'Easy care'},{e:'🌵',n:'Aloe Vera',t:'Succulent'},
+  ];
+  let scanHtml='';
+  if(scanResult){
+    scanHtml=`<div class="scan-result">
+      <div class="scan-result-header">
+        <div class="scan-result-emoji">${scanResult.emoji||'🌿'}</div>
+        <div><div class="scan-result-name">${scanResult.commonName}</div><div class="scan-result-sci">${scanResult.scientificName}</div></div>
+        <span class="scan-confidence">AI Identified</span>
+      </div>
+      <div class="scan-result-body">
+        <div class="scan-fact">${scanResult.description||''}</div>
+        <button class="scan-add-btn" onclick="addFromScan()">+ Add to My Plants</button>
+      </div></div>`;
+  }
+  el.innerHTML=`
+    <div class="scanner-hero">
+      <div class="viewfinder">
+        <div class="vf-overlay">
+          <div class="vf-frame">
+            <div class="vf-corner vf-tl"></div><div class="vf-corner vf-tr"></div>
+            <div class="vf-corner vf-bl"></div><div class="vf-corner vf-br"></div>
+            <div class="vf-scan-line"></div>
+          </div>
+          <div class="vf-hint" id="vf-hint">Point at a plant to identify</div>
+        </div>
+      </div>
+      <div class="scanner-controls">
+        <div class="scanner-btn-row">
+          <button class="scanner-main-btn" id="scan-btn" onclick="runScan()">🔍 Identify Plant</button>
+          <button class="scanner-alt-btn" onclick="openAddSheet()" title="Add manually">＋</button>
+        </div>
+        <div id="scan-input-row" style="display:flex;gap:8px">
+          <input class="ios-field" id="scan-name-in" placeholder="Or type a plant name…" style="flex:1">
+          <button style="height:44px;padding:0 14px;background:var(--g);color:#fff;border:none;border-radius:var(--r-sm);font-size:15px;font-weight:600;cursor:pointer" onclick="identifyByName()">Go</button>
+        </div>
+      </div>
+    </div>
+    ${scanHtml}
+    <div class="discover-grid-title">Popular Plants</div>
+    <div class="discover-grid">${popularPlants.map(x=>`<div class="disc-card" onclick="quickAdd('${x.n}','${x.e}')"><div class="disc-card-icon">${x.e}</div><div class="disc-card-name">${x.n}</div><div class="disc-card-tag">${x.t}</div></div>`).join('')}</div>`;
+}
+async function runScan(){
+  const nameIn=document.getElementById('scan-name-in');
+  const name=nameIn?.value.trim()||(popularPlants&&popularPlants[Math.floor(Math.random()*10)]?.n)||'Unknown Plant';
+  await identifyByName(name);
+}
+async function identifyByName(name){
+  name=name||(document.getElementById('scan-name-in')?.value.trim());
+  if(!name)return;
+  const btn=document.getElementById('scan-btn');
+  btn.classList.add('scanning');btn.textContent='Scanning…';
+  document.getElementById('vf-hint').textContent='Identifying…';
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:300,messages:[{role:'user',content:`Identify plant: "${name}". Return ONLY JSON: {"commonName":"s","scientificName":"s","description":"s","emoji":"🌿","confidence":95}`}]})});
+    const data=await res.json();
+    scanResult=JSON.parse(data.content.map(b=>b.text||'').join('').replace(/```json|```/g,'').trim());
+    renderDiscover();
+  }catch{document.getElementById('vf-hint').textContent='Could not identify — try again';}
+  if(btn){btn.classList.remove('scanning');btn.textContent='🔍 Identify Plant';}
+}
+function addFromScan(){if(!scanResult)return;addPlantDirect(scanResult.commonName,scanResult.emoji||'🌿','potted');scanResult=null;switchTab('plants');}
+async function quickAdd(name,emoji){await addPlantDirect(name,emoji,'potted');switchTab('plants');}
+
+// ══════════════════════════════════════════════════════════════════════════
+// SETTINGS TAB
+// ══════════════════════════════════════════════════════════════════════════
+function renderSettings(){
+  document.getElementById('tab-settings').innerHTML=`
+    <div class="settings-profile">
+      <div class="profile-avatar">🌿</div>
+      <div><div class="profile-name">My Garden</div><div class="profile-bio">${plants.length} plant${plants.length!==1?'s':''} tracked</div></div>
+    </div>
+    <div class="settings-sec-label">Appearance</div>
+    <div class="settings-group">
+      <div class="settings-row">
+        <div class="settings-row-icon" style="background:rgba(0,0,0,.08)">🌙</div>
+        <span class="settings-row-label">Dark Mode</span>
+        <label class="ios-toggle"><input type="checkbox" ${theme==='dark'?'checked':''} onchange="toggleTheme(this.checked)"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+      </div>
+    </div>
+    <div class="settings-sec-label">Data</div>
+    <div class="settings-group">
+      <div class="settings-row">
+        <div class="settings-row-icon" style="background:rgba(255,59,48,.12)">🗑</div>
+        <span class="settings-row-label settings-danger" onclick="clearAllData()" style="cursor:pointer">Clear All Plants</span>
+      </div>
+    </div>
+    <div class="settings-sec-label">About</div>
+    <div class="settings-group">
+      <div class="settings-row"><div class="settings-row-icon" style="background:var(--g-lt)">🌿</div><span class="settings-row-label">Verdant</span><span class="settings-row-val">v3.0</span></div>
+      <div class="settings-row"><div class="settings-row-icon" style="background:rgba(0,0,0,.08)">🤖</div><span class="settings-row-label">Powered by Claude AI</span><span class="settings-row-chev">›</span></div>
+    </div>`;
+}
+function toggleTheme(dark){theme=dark?'dark':'light';document.body.dataset.theme=theme;localStorage.setItem('verdant-theme',theme);}
+function clearAllData(){if(confirm('Clear all plant data? This cannot be undone.')){plants=[];remLog=[];save();saveRem();Object.keys(thumbRenders).forEach(destroyThumb);renderPlants();renderReminders();renderSettings();}}
+
+// ══════════════════════════════════════════════════════════════════════════
+// ADD PLANT
+// ══════════════════════════════════════════════════════════════════════════
+function openAddSheet(){document.getElementById('add-sheet').classList.add('open');setTimeout(()=>document.getElementById('plant-name-in').focus(),400);}
+function closeAddSheet(){document.getElementById('add-sheet').classList.remove('open');document.getElementById('plant-name-in').value='';document.getElementById('sheet-loading').style.display='none';document.getElementById('sheet-err').style.display='none';}
+document.getElementById('add-btn').addEventListener('click',openAddSheet);
+document.getElementById('sheet-cancel').addEventListener('click',closeAddSheet);
+document.getElementById('add-sheet').addEventListener('click',e=>{if(e.target===e.currentTarget)closeAddSheet();});
+document.getElementById('emoji-picker').addEventListener('click',e=>{const btn=e.target.closest('.emoji-btn');if(!btn)return;document.querySelectorAll('.emoji-btn').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel');selEmoji=btn.dataset.e;});
+document.getElementById('mode-potted').addEventListener('click',()=>setMode('potted'));
+document.getElementById('mode-garden').addEventListener('click',()=>setMode('garden'));
+function setMode(m){selMode=m;document.getElementById('mode-potted').classList.toggle('sel',m==='potted');document.getElementById('mode-garden').classList.toggle('sel',m==='garden');document.getElementById('garden-tip').classList.toggle('show',m==='garden');}
+document.getElementById('sheet-add').addEventListener('click',submitAdd);
+document.getElementById('plant-name-in').addEventListener('keydown',e=>{if(e.key==='Enter')submitAdd();});
+
+async function submitAdd(){
+  const name=document.getElementById('plant-name-in').value.trim();if(!name)return;
+  document.getElementById('sheet-loading').style.display='flex';
+  document.getElementById('sheet-err').style.display='none';
+  const plant={id:Date.now(),name,emoji:selEmoji,mode:selMode,profile:null,lastWatered:null};
+  plants.unshift(plant);save();closeAddSheet();switchTab('plants');
+  try{
+    const profile=await fetchProfile(name,selMode);
+    const idx=plants.findIndex(p=>p.id===plant.id);
+    if(idx!==-1){plants[idx].profile=profile;save();renderPlants();renderReminders();}
+  }catch(e){
+    const idx=plants.findIndex(p=>p.id===plant.id);
+    if(idx!==-1){plants.splice(idx,1);save();}
+    renderPlants();
+  }
+}
+async function addPlantDirect(name,emoji,mode){
+  const plant={id:Date.now(),name,emoji,mode,profile:null,lastWatered:null};
+  plants.unshift(plant);save();renderPlants();renderReminders();
+  try{const profile=await fetchProfile(name,mode);const idx=plants.findIndex(p=>p.id===plant.id);if(idx!==-1){plants[idx].profile=profile;save();renderPlants();renderReminders();}}catch{}
+}
+async function fetchProfile(name,mode){
+  const ge=mode==='garden'?`,"idealSoilPH":"string","idealBedSpacing":"string","companionPlants":[{"name":"s","reason":"s"}],"incompatiblePlants":[{"name":"s","reason":"s"}],"gardenConditions":"string","hardinessZone":"string"`:'';
+  const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1100,messages:[{role:'user',content:`Plant care profile for "${name}", mode: ${mode}. Return ONLY valid JSON:\n{"commonName":"s","scientificName":"s","description":"s","waterFrequencyDays":7,"wateringInstructions":"s","sunlight":"s","sunlightInstructions":"s","temperature":"s","soil":"s","pruning":"s","fertilizingSchedule":"s","difficulty":"Beginner","plantCategory":"pothos","funFacts":["s","s","s","s","s"]${ge}}`}]})});
+  const data=await res.json();
+  return JSON.parse(data.content.map(b=>b.text||'').join('').replace(/```json|```/g,'').trim());
+}
+function delPlant(id){plants=plants.filter(x=>x.id!==id);destroyThumb(id);save();renderPlants();renderReminders();}
+
+// ══════════════════════════════════════════════════════════════════════════
+// TAB NAVIGATION
+// ══════════════════════════════════════════════════════════════════════════
+function switchTab(tab){
+  currentTab=tab;
+  ['plants','reminders','discover','settings'].forEach(t=>{document.getElementById(`tab-${t}`).style.display=t===tab?'block':'none';});
+  document.getElementById('plants-controls').style.display=tab==='plants'?'block':'none';
+  document.querySelectorAll('.tab-item').forEach(b=>{const active=b.dataset.tab===tab;b.classList.toggle('active',active);b.querySelector('.tab-label').style.color=active?'var(--g)':'';});
+  const titles={plants:['Verdant','Your plant care companion'],reminders:['Reminders','Upcoming care tasks'],discover:['Discover','Find & identify plants'],settings:['Settings','']};
+  document.getElementById('nav-title').textContent=titles[tab][0];
+  document.getElementById('nav-sub').textContent=titles[tab][1];
+  document.getElementById('add-btn').style.display=tab==='plants'?'flex':'none';
+  if(tab==='reminders')renderReminders();
+  if(tab==='discover')renderDiscover();
+  if(tab==='settings')renderSettings();
+}
+document.querySelectorAll('.tab-item').forEach(b=>{b.addEventListener('click',()=>switchTab(b.dataset.tab));});
+document.getElementById('main-seg').addEventListener('click',e=>{const btn=e.target.closest('.seg-btn');if(!btn)return;activeFilter=btn.dataset.f;document.querySelectorAll('#main-seg .seg-btn').forEach(b=>b.classList.toggle('active',b===btn));renderPlants();});
+document.getElementById('search-in').addEventListener('input',e=>{searchQ=e.target.value;renderPlants();});
+
+// ══════════════════════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════════════════════
+document.body.dataset.theme=theme;
+function updateClock(){const now=new Date();document.getElementById('clock').textContent=now.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});}
+updateClock();setInterval(updateClock,10000);
+renderPlants();
+</script>
+</body>
+</html>
